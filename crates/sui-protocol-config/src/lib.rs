@@ -594,6 +594,10 @@ struct FeatureFlags {
     #[serde(skip_serializing_if = "is_false")]
     enable_nitro_attestation: bool,
 
+    // Enable GCP Confidential Spaces attestation.
+    #[serde(skip_serializing_if = "is_false")]
+    enable_gcp_attestation: bool,
+
     // Enable upgraded parsing of nitro attestation that interprets pcrs as a map.
     #[serde(skip_serializing_if = "is_false")]
     enable_nitro_attestation_upgraded_parsing: bool,
@@ -1740,6 +1744,10 @@ pub struct ProtocolConfig {
     nitro_attestation_verify_base_cost: Option<u64>,
     nitro_attestation_verify_cost_per_cert: Option<u64>,
 
+    // gcp_attestation::verify_gcp_attestation
+    gcp_attestation_verify_base_cost: Option<u64>,
+    gcp_attestation_verify_cost_per_byte: Option<u64>,
+
     // Stdlib costs
     bcs_per_byte_serialized_cost: Option<u64>,
     bcs_legacy_min_output_size_cost: Option<u64>,
@@ -2442,6 +2450,10 @@ impl ProtocolConfig {
 
     pub fn enable_nitro_attestation(&self) -> bool {
         self.feature_flags.enable_nitro_attestation
+    }
+
+    pub fn enable_gcp_attestation(&self) -> bool {
+        self.feature_flags.enable_gcp_attestation
     }
 
     pub fn enable_nitro_attestation_upgraded_parsing(&self) -> bool {
@@ -3198,6 +3210,9 @@ impl ProtocolConfig {
             nitro_attestation_parse_cost_per_byte: None,
             nitro_attestation_verify_base_cost: None,
             nitro_attestation_verify_cost_per_cert: None,
+
+            gcp_attestation_verify_base_cost: None,
+            gcp_attestation_verify_cost_per_byte: None,
 
             bcs_per_byte_serialized_cost: None,
             bcs_legacy_min_output_size_cost: None,
@@ -4738,6 +4753,14 @@ impl ProtocolConfig {
                 }
                 115 => {
                     cfg.feature_flags.normalize_depth_formula = true;
+                    // Enable GCP Confidential Spaces attestation on devnet only initially.
+                    // Base cost derived from Criterion benchmark: full_verify_gcp_attestation ≈ 22 µs
+                    // (ring BoringSSL-backed RSA-2048 PKCS#1v15 SHA-256).
+                    if chain != Chain::Mainnet && chain != Chain::Testnet {
+                        cfg.feature_flags.enable_gcp_attestation = true;
+                        cfg.gcp_attestation_verify_base_cost = Some(22_000 * 50);
+                        cfg.gcp_attestation_verify_cost_per_byte = Some(50);
+                    }
                 }
                 116 => {
                     cfg.feature_flags.gasless_transaction_drop_safety = true;
