@@ -5,12 +5,15 @@ use base64::Engine;
 use base64::engine::general_purpose::URL_SAFE_NO_PAD;
 use move_binary_format::errors::PartialVMResult;
 use move_core_types::gas_algebra::InternalGas;
-use move_vm_runtime::native_functions::NativeContext;
-use move_vm_types::{
-    loaded_data::runtime_types::Type,
-    natives::function::NativeResult,
+use move_vm_runtime::native_charge_gas_early_exit;
+use move_vm_runtime::natives::functions::NativeContext;
+use move_vm_runtime::{
+    execution::{
+        Type,
+        values::{Struct, Value, Vector, VectorRef, VectorSpecialization},
+    },
+    natives::functions::NativeResult,
     pop_arg,
-    values::{Struct, Value, Vector, VectorRef, VectorSpecialization},
 };
 use std::collections::VecDeque;
 use sui_types::gcp_attestation::{
@@ -18,7 +21,6 @@ use sui_types::gcp_attestation::{
 };
 
 use crate::{NativesCostTable, get_extension, object_runtime::ObjectRuntime};
-use move_vm_runtime::native_charge_gas_early_exit;
 
 pub const NOT_SUPPORTED_ERROR: u64 = 0;
 pub const PARSE_ERROR: u64 = 1;
@@ -70,9 +72,9 @@ pub fn verify_gcp_attestation_internal(
     let jwk_e_ref = pop_arg!(args, VectorRef);
     let jwk_n_ref = pop_arg!(args, VectorRef);
     let token_ref = pop_arg!(args, VectorRef);
-    let jwk_e_b64 = jwk_e_ref.as_bytes_ref();
-    let jwk_n_b64 = jwk_n_ref.as_bytes_ref();
-    let token = token_ref.as_bytes_ref();
+    let jwk_e_b64 = jwk_e_ref.as_bytes_ref()?;
+    let jwk_n_b64 = jwk_n_ref.as_bytes_ref()?;
+    let token = token_ref.as_bytes_ref()?;
 
     let cost_params = get_extension!(context, NativesCostTable)?
         .gcp_attestation_cost_params

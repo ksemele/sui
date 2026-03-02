@@ -12,7 +12,7 @@
       "name": "Apache-2.0",
       "url": "https://raw.githubusercontent.com/MystenLabs/sui/main/LICENSE"
     },
-    "version": "1.70.0"
+    "version": "1.69.0"
   },
   "methods": [
     {
@@ -1294,7 +1294,7 @@
             "name": "Result",
             "value": {
               "minSupportedProtocolVersion": "1",
-              "maxSupportedProtocolVersion": "121",
+              "maxSupportedProtocolVersion": "119",
               "protocolVersion": "6",
               "featureFlags": {
                 "abstract_size_in_object_runtime": false,
@@ -1347,7 +1347,6 @@
                 "disable_preconsensus_locking": false,
                 "disallow_adding_abilities_on_upgrade": false,
                 "disallow_change_struct_type_params_on_upgrade": false,
-                "disallow_jump_orphans": false,
                 "disallow_new_modules_in_deps_only_packages": false,
                 "disallow_self_identifier": false,
                 "enable_accumulators": false,
@@ -1359,7 +1358,7 @@
                 "enable_coin_reservation_obj_refs": false,
                 "enable_display_registry": false,
                 "enable_effects_v2": false,
-                "enable_gasless": false,
+                "enable_gcp_attestation": false,
                 "enable_group_ops_native_function_msm": false,
                 "enable_group_ops_native_functions": false,
                 "enable_jwk_consensus_updates": false,
@@ -1695,9 +1694,8 @@
                   "u64": "5"
                 },
                 "gas_rounding_step": null,
-                "gasless_max_computation_units": null,
-                "gasless_max_pure_input_bytes": null,
-                "gasless_max_unused_inputs": null,
+                "gcp_attestation_verify_base_cost": null,
+                "gcp_attestation_verify_cost_per_byte": null,
                 "groth16_prepare_verifying_key_bls12381_cost_base": {
                   "u64": "52"
                 },
@@ -2035,8 +2033,6 @@
                 },
                 "transfer_party_transfer_internal_cost_base": null,
                 "transfer_receive_object_cost_base": null,
-                "transfer_receive_object_cost_per_byte": null,
-                "transfer_receive_object_type_cost_per_byte": null,
                 "transfer_share_object_cost_base": {
                   "u64": "52"
                 },
