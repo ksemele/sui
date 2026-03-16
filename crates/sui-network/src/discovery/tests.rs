@@ -1645,13 +1645,12 @@ async fn test_discovery_only_peer_not_in_network_known_peers() -> Result<()> {
         "Discovery-only peer should not appear in network.known_peers()"
     );
     assert!(
-        event_loop
+        !event_loop
             .state
             .read()
             .unwrap()
             .peer_addresses
-            .get(&gossip_peer_id)
-            .is_none(),
+            .contains_key(&gossip_peer_id),
         "Discovery-only peer should not have any entry in peer_addresses"
     );
 

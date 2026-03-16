@@ -4769,6 +4769,8 @@ impl ProtocolConfig {
                     // Disabled while debugging
                     cfg.feature_flags.defer_unpaid_amplification = false;
                     cfg.feature_flags.enable_display_registry = true;
+                    // Bump package size limit to accommodate new framework modules (GCP attestation).
+                    cfg.max_move_package_size = Some(110 * 1024);
                 }
                 117 => {}
                 118 => {
