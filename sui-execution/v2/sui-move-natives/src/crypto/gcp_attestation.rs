@@ -9,7 +9,9 @@
 use move_binary_format::errors::{PartialVMError, PartialVMResult};
 use move_core_types::vm_status::StatusCode;
 use move_vm_runtime::native_functions::NativeContext;
-use move_vm_types::{loaded_data::runtime_types::Type, natives::function::NativeResult, values::Value};
+use move_vm_types::{
+    loaded_data::runtime_types::Type, natives::function::NativeResult, values::Value,
+};
 use std::collections::VecDeque;
 
 pub fn verify_gcp_attestation_internal(

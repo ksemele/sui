@@ -3,7 +3,10 @@
 
 use self::{
     address::{AddressFromBytesCostParams, AddressFromU256CostParams, AddressToU256CostParams},
-    crypto::{bls12381, ecdsa_k1, ecdsa_r1, ecvrf, ed25519, gcp_attestation as gcp_attestation_stub, groth16, hash, hmac},
+    crypto::{
+        bls12381, ecdsa_k1, ecdsa_r1, ecvrf, ed25519, gcp_attestation as gcp_attestation_stub,
+        groth16, hash, hmac,
+    },
     crypto::{
         bls12381::{Bls12381Bls12381MinPkVerifyCostParams, Bls12381Bls12381MinSigVerifyCostParams},
         ecdsa_k1::{
