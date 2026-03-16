@@ -46,6 +46,7 @@ use crate::crypto::zklogin;
 use crate::crypto::zklogin::{CheckZkloginIdCostParams, CheckZkloginIssuerCostParams};
 use crate::{crypto::group_ops, transfer::PartyTransferInternalCostParams};
 use better_any::{Tid, TidAble};
+use crypto::gcp_attestation as gcp_attestation_stub;
 use crypto::nitro_attestation::{self, NitroAttestationCostParams};
 use crypto::vdf::{self, VDFCostParams};
 use move_binary_format::errors::{PartialVMError, PartialVMResult};
@@ -1305,6 +1306,11 @@ pub fn all_natives(silent: bool, protocol_config: &ProtocolConfig) -> NativeFunc
             "nitro_attestation",
             "load_nitro_attestation_internal",
             make_native!(nitro_attestation::load_nitro_attestation_internal),
+        ),
+        (
+            "gcp_attestation",
+            "verify_gcp_attestation_internal",
+            make_native!(gcp_attestation_stub::verify_gcp_attestation_internal),
         ),
     ];
     let sui_framework_natives_iter =

@@ -3,7 +3,7 @@
 
 use self::{
     address::{AddressFromBytesCostParams, AddressFromU256CostParams, AddressToU256CostParams},
-    crypto::{bls12381, ecdsa_k1, ecdsa_r1, ecvrf, ed25519, groth16, hash, hmac},
+    crypto::{bls12381, ecdsa_k1, ecdsa_r1, ecvrf, ed25519, gcp_attestation as gcp_attestation_stub, groth16, hash, hmac},
     crypto::{
         bls12381::{Bls12381Bls12381MinPkVerifyCostParams, Bls12381Bls12381MinSigVerifyCostParams},
         ecdsa_k1::{
@@ -704,6 +704,11 @@ pub fn all_natives(silent: bool) -> NativeFunctionTable {
             "zklogin_verified_issuer",
             "check_zklogin_issuer_internal",
             make_native!(zklogin::check_zklogin_issuer_internal),
+        ),
+        (
+            "gcp_attestation",
+            "verify_gcp_attestation_internal",
+            make_native!(gcp_attestation_stub::verify_gcp_attestation_internal),
         ),
     ];
     let sui_framework_natives_iter =
