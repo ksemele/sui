@@ -54,6 +54,9 @@ use crate::api::types::object_filter::ObjectFilter;
 use crate::api::types::object_filter::ObjectFilterValidator as OFValidator;
 use crate::api::types::protocol_configs::ProtocolConfigs;
 use crate::api::types::service_config::ServiceConfig;
+use crate::api::types::signature_verify;
+use crate::api::types::signature_verify::IntentScope;
+use crate::api::types::signature_verify::SignatureVerifyResult;
 use crate::api::types::simulation_result::SimulationResult;
 use crate::api::types::transaction::CTransaction;
 use crate::api::types::transaction::Transaction;
@@ -796,6 +799,87 @@ impl Query {
         }
     }
 
+    /// Verify a signature is from the given `author`.
+    ///
+    /// Supports all signature types: Ed25519, Secp256k1, Secp256r1, MultiSig, ZkLogin, and
+    /// Passkey.
+    ///
+    /// Returns successfully if the signature is valid. If the signature is invalid, returns an
+    /// error with the reason for the failure.
+    ///
+    /// - `message` is either a serialized personal message or `TransactionData`, Base64-encoded.
+    /// - `signature` is a serialized signature, also Base64-encoded.
+    /// - `intentScope` indicates whether `message` is to be parsed as a personal message or
+    ///   `TransactionData`.
+    /// - `author` is an optional signer's address. If provided, the service validates that the
+    ///   signature corresponds to this address.
+    async fn verify_signature(
+        &self,
+        ctx: &Context<'_>,
+        message: Base64,
+        signature: Base64,
+        intent_scope: IntentScope,
+        author: Option<SuiAddress>,
+    ) -> Option<Result<SignatureVerifyResult, RpcError<signature_verify::Error>>> {
+        Some(
+            async {
+                let fullnode_client: &FullnodeClient = ctx.data()?;
+
+                let bcs_message = match intent_scope {
+                    IntentScope::TransactionData => {
+                        proto::Bcs::from(message.0).with_name("TransactionData")
+                    }
+                    IntentScope::PersonalMessage => proto::Bcs::serialize(&message.0.as_slice())
+                        .map_err(|e| {
+                            bad_user_input(signature_verify::Error::InvalidArgument(format!(
+                                "Failed to serialize personal message: {e}"
+                            )))
+                        })?
+                        .with_name("PersonalMessage"),
+                };
+
+                let user_signature =
+                    proto::UserSignature::default().with_bcs(proto::Bcs::from(signature.0));
+
+                let mut request = proto::VerifySignatureRequest::default()
+                    .with_message(bcs_message)
+                    .with_signature(user_signature);
+
+                if let Some(author) = author {
+                    request = request.with_address(author.to_string());
+                }
+
+                match fullnode_client.verify_signature(request).await {
+                    Ok(response) => {
+                        if response.is_valid() {
+                            Ok(SignatureVerifyResult {
+                                success: Some(true),
+                            })
+                        } else {
+                            let reason = response
+                                .reason
+                                .unwrap_or_else(|| "Unknown reason".to_string());
+                            Err(bad_user_input(signature_verify::Error::VerificationFailed(
+                                reason,
+                            )))
+                        }
+                    }
+                    Err(GrpcExecutionError(status))
+                        if matches!(status.code(), Code::InvalidArgument) =>
+                    {
+                        Err(bad_user_input(signature_verify::Error::InvalidArgument(
+                            status.message().to_string(),
+                        )))
+                    }
+                    Err(other_error) => Err(anyhow!(other_error)
+                        .context("Failed to verify signature")
+                        .into()),
+                }
+            }
+            .await,
+        )
+    }
+
     /// Verify a zkLogin signature is from the given `author`.
     ///
     /// Returns successfully if the signature is valid. If the signature is invalid, returns an error with the reason for the failure.
@@ -804,6 +888,7 @@ impl Query {
     /// - `signature` is a serialized zkLogin signature, also Base64-encoded.
     /// - `intentScope` indicates whether `bytes` are to be parsed as a personal message or `TransactionData`.
     /// - `author` is the signer's address.
+    #[graphql(deprecation = "Use `verifySignature` instead, which supports all signature types.")]
     async fn verify_zk_login_signature(
         &self,
         ctx: &Context<'_>,

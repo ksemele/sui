@@ -8,11 +8,13 @@ use prometheus::Registry;
 use prost_types::FieldMask;
 use sui_rpc::field::FieldMaskUtil;
 use sui_rpc::proto::sui::rpc::v2 as proto;
+use sui_rpc::proto::sui::rpc::v2::signature_verification_service_client::SignatureVerificationServiceClient;
 use sui_rpc::proto::sui::rpc::v2::transaction_execution_service_client::TransactionExecutionServiceClient;
 use sui_types::signature::GenericSignature;
 use sui_types::transaction::Transaction;
 use sui_types::transaction::TransactionData;
 use tonic::transport::Channel;
+use tonic::transport::ClientTlsConfig;
 use tracing::instrument;
 
 use crate::metrics::FullnodeClientMetrics;
@@ -28,6 +30,7 @@ pub struct FullnodeArgs {
 #[derive(Clone)]
 pub struct FullnodeClient {
     execution_client: Option<TransactionExecutionServiceClient<Channel>>,
+    verification_client: Option<SignatureVerificationServiceClient<Channel>>,
     metrics: Arc<FullnodeClientMetrics>,
 }
 
@@ -49,20 +52,27 @@ impl FullnodeClient {
         args: FullnodeArgs,
         registry: &Registry,
     ) -> Result<Self, Error> {
-        let execution_client = if let Some(url) = &args.fullnode_rpc_url {
-            let channel = Channel::from_shared(url.clone())
-                .context("Failed to create channel for gRPC endpoint")?
-                .connect_lazy();
-
-            Some(TransactionExecutionServiceClient::new(channel))
+        let channel = if let Some(url) = &args.fullnode_rpc_url {
+            let tls_config = ClientTlsConfig::new().with_native_roots();
+            Some(
+                Channel::from_shared(url.clone())
+                    .context("Failed to create channel for gRPC endpoint")?
+                    .tls_config(tls_config)
+                    .context("Failed to configure TLS for gRPC endpoint")?
+                    .connect_lazy(),
+            )
         } else {
             None
         };
+
+        let execution_client = channel.clone().map(TransactionExecutionServiceClient::new);
+        let verification_client = channel.map(SignatureVerificationServiceClient::new);
 
         let metrics = FullnodeClientMetrics::new(prefix, registry);
 
         Ok(Self {
             execution_client,
+            verification_client,
             metrics,
         })
     }
@@ -149,6 +159,20 @@ impl FullnodeClient {
             "simulate_transaction",
             self.execution_client.clone(),
             |mut client| async move { client.simulate_transaction(request).await },
+        )
+        .await
+    }
+
+    /// Verify a signature via the full node gRPC service.
+    #[instrument(skip(self, request), level = "debug")]
+    pub async fn verify_signature(
+        &self,
+        request: proto::VerifySignatureRequest,
+    ) -> Result<proto::VerifySignatureResponse, Error> {
+        self.request(
+            "verify_signature",
+            self.verification_client.clone(),
+            |mut client| async move { client.verify_signature(request).await },
         )
         .await
     }
