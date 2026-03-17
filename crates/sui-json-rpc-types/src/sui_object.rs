@@ -655,7 +655,9 @@ impl TryInto<Object> for SuiObjectData {
     type Error = anyhow::Error;
 
     fn try_into(self) -> Result<Object, Self::Error> {
-        let protocol_config = ProtocolConfig::get_for_min_version();
+        // Use max version so that package size limits reflect the current protocol,
+        // not the historical minimum (which may be too restrictive for the current framework).
+        let protocol_config = ProtocolConfig::get_for_max_version_UNSAFE();
         self.try_into_object(&protocol_config)
     }
 }
