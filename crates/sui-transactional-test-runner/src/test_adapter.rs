@@ -165,6 +165,10 @@ pub struct SuiTestAdapter {
     object_enumeration: BiBTreeMap<ObjectID, FakeID>,
     /// Mapping from task ID to a transaction digest, for use in named variable substitution.
     digest_enumeration: BTreeMap<u64, TransactionDigest>,
+    /// Tracks the global creation order of each object across all transactions.
+    creation_order: BTreeMap<ObjectID, u64>,
+    /// Monotonically increasing counter for assigning creation order across transactions.
+    next_creation_ord: u64,
     next_fake: (u64, u64),
     gas_price: u64,
     pub(crate) staged_modules: BTreeMap<Symbol, StagedPackage>,
@@ -388,7 +392,12 @@ impl MoveTestAdapter<'_> for SuiTestAdapter {
     }
 
     fn write_object_output(&self, path: &Path) {
-        self.write_object_enumeration_dump(&path.with_extension("objects"));
+        let objects_path = path.with_extension("objects");
+        if objects_path.exists() {
+            self.write_object_enumeration_dump(&path.with_extension("objects.new"));
+        } else {
+            self.write_object_enumeration_dump(&objects_path);
+        }
     }
 
     async fn init(
@@ -485,6 +494,8 @@ impl MoveTestAdapter<'_> for SuiTestAdapter {
             default_syntax,
             object_enumeration: BiBTreeMap::new(),
             digest_enumeration: BTreeMap::new(),
+            creation_order: BTreeMap::new(),
+            next_creation_ord: 0,
             next_fake: (0, 0),
             // TODO: make this configurable
             gas_price: default_gas_price.unwrap_or(DEFAULT_GAS_PRICE),
@@ -2052,6 +2063,8 @@ impl SuiTestAdapter {
 
         let gas_summary = effects.gas_cost_summary();
 
+        self.record_creation_order(digest, &created_ids);
+
         // make sure objects that have previously not been in storage get assigned a fake id.
         let mut might_need_fake_id: Vec<_> = created_ids
             .iter()
@@ -2214,6 +2227,8 @@ impl SuiTestAdapter {
 
         let gas_summary = effects.gas_cost_summary();
 
+        self.record_creation_order(effects.transaction_digest(), &created_ids);
+
         // make sure objects that have previously not been in storage get assigned a fake id.
         let mut might_need_fake_id: Vec<_> = created_ids
             .iter()
@@ -2283,8 +2298,28 @@ impl SuiTestAdapter {
 
     // stable way of sorting objects by type. Does not however, produce a stable sorting
     // between objects of the same type
-    fn get_object_sorting_key(&self, id: &ObjectID) -> String {
-        match &self.get_object(id, None).unwrap().data {
+    fn record_creation_order(&mut self, digest: &TransactionDigest, created_ids: &[ObjectID]) {
+        if created_ids.is_empty() {
+            return;
+        }
+        let mut remaining: HashSet<ObjectID> = created_ids.iter().copied().collect();
+        let mut n = 0u64;
+        let max_probes = (created_ids.len() as u64) * 10 + 100;
+        while !remaining.is_empty() && n < max_probes {
+            let candidate = ObjectID::derive_id(*digest, n);
+            if remaining.remove(&candidate) {
+                self.creation_order.insert(candidate, self.next_creation_ord);
+                self.next_creation_ord += 1;
+            }
+            n += 1;
+        }
+    }
+
+    fn get_object_sorting_key(&self, id: &ObjectID) -> (u64, String) {
+        if let Some(&ord) = self.creation_order.get(id) {
+            return (ord, String::new());
+        }
+        let type_key = match &self.get_object(id, None).unwrap().data {
             object::Data::Move(obj) => self.stabilize_str(format!("{}", obj.type_())),
             object::Data::Package(pkg) => pkg
                 .serialized_module_map()
@@ -2292,7 +2327,8 @@ impl SuiTestAdapter {
                 .map(|s| s.as_str())
                 .collect::<Vec<_>>()
                 .join(","),
-        }
+        };
+        (u64::MAX, type_key)
     }
 
     pub(crate) fn fake_to_real_object_id(&self, fake_id: FakeID) -> Option<ObjectID> {

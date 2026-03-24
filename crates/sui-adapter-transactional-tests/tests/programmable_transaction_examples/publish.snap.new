@@ -27,7 +27,7 @@ Error: Error checking transaction input objects: A move package is expected, ins
 task 7, lines 42-47:
 //# publish --dependencies p q
 Error: error[E03002]: unbound module
-   ┌─ /var/folders/wq/yn9hqn9s71s8ktjc6z89b8wr0000gn/T/.tmpmbbGYG:45:19
+   ┌─ /var/folders/wq/yn9hqn9s71s8ktjc6z89b8wr0000gn/T/.tmp1tarFK:45:19
    │
 45 │         p::m::foo(q::m::x())
    │                   ^^^^ Unbound module 'q::m'

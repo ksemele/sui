@@ -1,5 +1,6 @@
 ---
 source: external-crates/move/crates/move-transactional-test-runner/src/framework.rs
+assertion_line: 915
 ---
 processed 14 tasks
 
@@ -22,86 +23,85 @@ gas summary: computation_cost: 1000000, storage_cost: 17609200,  storage_rebate:
 
 task 3, line 146:
 //# view-object 2,9
-Owner: Account Address ( A )
+Owner: Object ID: ( _ )
 Version: 2
-Contents: test::m::Parent {
+Contents: sui::dynamic_field::Field<u64, u64> {
     id: sui::object::UID {
         id: sui::object::ID {
             bytes: fake(2,9),
         },
     },
+    name: 0u64,
+    value: 0u64,
 }
 
 task 4, lines 148-149:
 //# programmable --sender A --inputs object(2,9) 112
 //> test::m::set(Input(0), Input(1))
-mutated: object(0,0), object(2,1), object(2,2), object(2,3), object(2,4), object(2,5), object(2,6), object(2,7), object(2,8), object(2,9)
-gas summary: computation_cost: 1000000, storage_cost: 13968800,  storage_rebate: 13829112, non_refundable_storage_fee: 139688
+Error: Error checking transaction input objects: Object object(2,9) is owned by object 0x1469755bc2c30c3a307d642d7e7ed37c792f05cb2db8c8fa16ac1fd70c57a08a. Objects owned by other objects cannot be used as input arguments
 
 task 5, line 151:
 //# view-object 2,9
-Owner: Account Address ( A )
-Version: 3
-Contents: test::m::Parent {
+Owner: Object ID: ( _ )
+Version: 2
+Contents: sui::dynamic_field::Field<u64, u64> {
     id: sui::object::UID {
         id: sui::object::ID {
             bytes: fake(2,9),
         },
     },
+    name: 0u64,
+    value: 0u64,
 }
 
 task 6, lines 153-154:
 //# programmable --sender A --inputs object(2,9) 112
 //> test::m::remove(Input(0))
-mutated: object(0,0), object(2,9)
-deleted: object(2,1), object(2,2), object(2,3), object(2,4), object(2,5), object(2,6), object(2,7), object(2,8)
-gas summary: computation_cost: 1000000, storage_cost: 2234400,  storage_rebate: 13829112, non_refundable_storage_fee: 139688
+Error: Error checking transaction input objects: Object object(2,9) is owned by object 0x1469755bc2c30c3a307d642d7e7ed37c792f05cb2db8c8fa16ac1fd70c57a08a. Objects owned by other objects cannot be used as input arguments
 
 task 7, lines 156-159:
 //# view-object 2,9
-Owner: Account Address ( A )
-Version: 4
-Contents: test::m::Parent {
+Owner: Object ID: ( _ )
+Version: 2
+Contents: sui::dynamic_field::Field<u64, u64> {
     id: sui::object::UID {
         id: sui::object::ID {
             bytes: fake(2,9),
         },
     },
+    name: 0u64,
+    value: 0u64,
 }
 
 task 8, lines 161-162:
 //# programmable --sender A --inputs object(2,9)@2 vector[0] --dev-inspect
 //> test::m::check(Input(0), Input(1))
-mutated: object(_), object(2,9)
-gas summary: computation_cost: 500000, storage_cost: 2234400,  storage_rebate: 1233936, non_refundable_storage_fee: 12464
+Error: Transaction Effects Status: CommandArgumentError { arg_idx: 0, kind: TypeMismatch } in command 0
+Execution Error: CommandArgumentError { arg_idx: 0, kind: TypeMismatch } in command 0
 
 task 9, lines 164-165:
 //# programmable --sender A --inputs object(2,9)@3 vector[112] --dev-inspect
 //> test::m::check(Input(0), Input(1))
-mutated: object(_), object(2,9)
-gas summary: computation_cost: 500000, storage_cost: 2234400,  storage_rebate: 1233936, non_refundable_storage_fee: 12464
+Error: INVALID TEST. Could not load object argument object(2,9)
 
 task 10, lines 167-171:
 //# programmable --sender A --inputs object(2,9)@4 vector[] --dev-inspect
 //> test::m::check(Input(0), Input(1))
 // dev-inspect with 'check' and _incorrect_ values
-mutated: object(_), object(2,9)
-gas summary: computation_cost: 500000, storage_cost: 2234400,  storage_rebate: 1233936, non_refundable_storage_fee: 12464
+Error: INVALID TEST. Could not load object argument object(2,9)
 
 task 11, lines 173-174:
 //# programmable --sender A --inputs object(2,9)@3 vector[0] --dev-inspect
 //> test::m::check(Input(0), Input(1))
-Error: Transaction Effects Status: MoveAbort(MoveLocation { module: ModuleId { address: test, name: Identifier("m") }, function: 14, instruction: 12, function_name: Some("check_") }, 0) in command 0
-Execution Error: MoveAbort(MoveLocation { module: ModuleId { address: test, name: Identifier("m") }, function: 14, instruction: 12, function_name: Some("check_") }, 0) in command 0
+Error: INVALID TEST. Could not load object argument object(2,9)
 
 task 12, lines 176-177:
 //# programmable --sender A --inputs object(2,9)@4 vector[112] --dev-inspect
 //> test::m::check(Input(0), Input(1))
-Error: Transaction Effects Status: MoveAbort(MoveLocation { module: ModuleId { address: sui, name: Identifier("dynamic_field") }, function: 11, instruction: 0, function_name: Some("borrow_child_object") }, 1) in command 0
-Execution Error: MoveAbort(MoveLocation { module: ModuleId { address: sui, name: Identifier("dynamic_field") }, function: 11, instruction: 0, function_name: Some("borrow_child_object") }, 1) in command 0
+Error: INVALID TEST. Could not load object argument object(2,9)
 
 task 13, lines 179-180:
 //# programmable --sender A --inputs object(2,9)@2 vector[] --dev-inspect
 //> test::m::check(Input(0), Input(1))
-Error: Transaction Effects Status: MoveAbort(MoveLocation { module: ModuleId { address: test, name: Identifier("m") }, function: 14, instruction: 20, function_name: Some("check_") }, 0) in command 0
-Execution Error: MoveAbort(MoveLocation { module: ModuleId { address: test, name: Identifier("m") }, function: 14, instruction: 20, function_name: Some("check_") }, 0) in command 0
+Error: Transaction Effects Status: CommandArgumentError { arg_idx: 0, kind: TypeMismatch } in command 0
+Execution Error: CommandArgumentError { arg_idx: 0, kind: TypeMismatch } in command 0

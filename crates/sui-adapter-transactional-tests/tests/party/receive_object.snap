@@ -1,5 +1,6 @@
 ---
 source: external-crates/move/crates/move-transactional-test-runner/src/framework.rs
+assertion_line: 915
 ---
 processed 15 tasks
 
@@ -56,7 +57,7 @@ Contents: ex::m::PubB {
 
 task 6, lines 56-58:
 //# view-object 2,3
-Owner: Account Address ( fake(2,1) )
+Owner: ConsensusAddressOwner( 3, fake(2,0) )
 Version: 3
 Contents: ex::m::PubB {
     id: sui::object::UID {
@@ -68,7 +69,7 @@ Contents: ex::m::PubB {
 
 task 7, lines 59-61:
 //# view-object 2,4
-Owner: ConsensusAddressOwner( 3, fake(2,1) )
+Owner: Account Address ( fake(2,1) )
 Version: 3
 Contents: ex::m::PubB {
     id: sui::object::UID {
@@ -80,7 +81,7 @@ Contents: ex::m::PubB {
 
 task 8, lines 62-65:
 //# view-object 2,5
-Owner: ConsensusAddressOwner( 3, fake(2,0) )
+Owner: ConsensusAddressOwner( 3, fake(2,1) )
 Version: 3
 Contents: ex::m::PubB {
     id: sui::object::UID {
@@ -109,13 +110,12 @@ Contents: ex::m::PubB {
 
 task 11, line 72:
 //# run ex::m::receiver --args object(2,1) receiving(2,3)
-mutated: object(0,2), object(2,1), object(2,3)
-gas summary: computation_cost: 1000000, storage_cost: 3450400,  storage_rebate: 3415896, non_refundable_storage_fee: 34504
+Error: Error checking transaction input objects: Object used as shared is not shared
 
 task 12, lines 74-77:
 //# view-object 2,3
-Owner: Account Address ( _ )
-Version: 5
+Owner: ConsensusAddressOwner( 3, fake(2,0) )
+Version: 3
 Contents: ex::m::PubB {
     id: sui::object::UID {
         id: sui::object::ID {
@@ -130,4 +130,5 @@ Error: Error checking transaction input objects: Object used as shared is not sh
 
 task 14, line 81:
 //# run ex::m::receiver --args object(2,1) receiving(2,4)
-Error: Error checking transaction input objects: Object used as shared is not shared
+mutated: object(0,2), object(2,1), object(2,4)
+gas summary: computation_cost: 1000000, storage_cost: 3450400,  storage_rebate: 3415896, non_refundable_storage_fee: 34504

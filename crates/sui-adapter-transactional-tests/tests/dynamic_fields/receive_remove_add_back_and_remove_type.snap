@@ -1,5 +1,6 @@
 ---
 source: external-crates/move/crates/move-transactional-test-runner/src/framework.rs
+assertion_line: 915
 ---
 processed 10 tasks
 
@@ -20,9 +21,7 @@ gas summary: computation_cost: 1000000, storage_cost: 4689200,  storage_rebate: 
 
 task 3, line 91:
 //# run test::m1::test_dof --args object(2,2) receiving(2,0) receiving(2,1) --sender A
-mutated: object(0,0), object(2,0), object(2,2)
-deleted: object(2,1)
-gas summary: computation_cost: 1000000, storage_cost: 3465600,  storage_rebate: 4642308, non_refundable_storage_fee: 46892
+Error: Error checking transaction input objects: Transaction was not signed by the correct sender: Object object(2,2) is owned by account address object(2,0), but given owner/signer address is @A
 
 task 4, line 93:
 //# run test::m1::create --sender A
@@ -32,9 +31,7 @@ gas summary: computation_cost: 1000000, storage_cost: 4689200,  storage_rebate: 
 
 task 5, line 95:
 //# run test::m1::test_df --args object(4,2) receiving(4,0) receiving(4,1) --sender A
-mutated: object(0,0), object(4,0), object(4,2)
-deleted: object(4,1)
-gas summary: computation_cost: 1000000, storage_cost: 3465600,  storage_rebate: 4642308, non_refundable_storage_fee: 46892
+Error: Error checking transaction input objects: Transaction was not signed by the correct sender: Object object(4,2) is owned by account address object(4,0), but given owner/signer address is @A
 
 task 6, line 97:
 //# run test::m1::create --sender A
@@ -44,10 +41,7 @@ gas summary: computation_cost: 1000000, storage_cost: 4689200,  storage_rebate: 
 
 task 7, line 99:
 //# run test::m1::test_dof_wrapper --args object(6,2) receiving(6,0) receiving(6,1) --sender A
-created: object(7,0)
-mutated: object(0,0), object(6,2)
-wrapped: object(6,0)
-gas summary: computation_cost: 1000000, storage_cost: 4050800,  storage_rebate: 3430944, non_refundable_storage_fee: 34656
+Error: Error checking transaction input objects: Transaction was not signed by the correct sender: Object object(6,2) is owned by account address object(6,0), but given owner/signer address is @A
 
 task 8, line 101:
 //# run test::m1::create --sender A
@@ -57,7 +51,4 @@ gas summary: computation_cost: 1000000, storage_cost: 4689200,  storage_rebate: 
 
 task 9, line 103:
 //# run test::m1::test_df_wrapper --args object(8,2) receiving(8,0) receiving(8,1) --sender A
-created: object(9,0)
-mutated: object(0,0), object(8,2)
-wrapped: object(8,0)
-gas summary: computation_cost: 1000000, storage_cost: 4050800,  storage_rebate: 3430944, non_refundable_storage_fee: 34656
+Error: Error checking transaction input objects: Transaction was not signed by the correct sender: Object object(8,2) is owned by account address object(8,0), but given owner/signer address is @A

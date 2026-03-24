@@ -1,5 +1,6 @@
 ---
 source: external-crates/move/crates/move-transactional-test-runner/src/framework.rs
+assertion_line: 915
 ---
 processed 4 tasks
 
@@ -20,6 +21,4 @@ gas summary: computation_cost: 1000000, storage_cost: 4681600,  storage_rebate: 
 
 task 3, line 55:
 //# run a::m::claim_and_receive_nested --sender A --args object(2,2) receiving(2,1) receiving(2,0)
-created: object(3,0), object(3,1), object(3,2), object(3,3)
-mutated: object(0,0), object(2,0), object(2,1), object(2,2)
-gas summary: computation_cost: 1000000, storage_cost: 12175200,  storage_rebate: 4634784, non_refundable_storage_fee: 46816
+Error: Error checking transaction input objects: Transaction was not signed by the correct sender: Object object(2,2) is owned by account address 0x383c6e17c6aeb6a31ee293d2e61208004740460f7baf044eddeddcd29cadb7e4, but given owner/signer address is @A
