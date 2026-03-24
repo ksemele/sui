@@ -179,6 +179,9 @@ pub trait MoveTestAdapter<'a>: Sized + Send {
         None
     }
 
+    /// Write auxiliary output files (e.g., `.objects`) alongside the test file at `path`.
+    fn write_object_output(&self, _path: &Path) {}
+
     async fn process_error(&self, error: anyhow::Error) -> anyhow::Error;
 
     async fn handle_command(
@@ -896,6 +899,10 @@ where
 
     for task in tasks {
         handle_known_task(&mut output, &mut adapter, task).await;
+    }
+
+    if std::env::var("SUI_TEST_OBJECT_DUMP").is_ok() {
+        adapter.write_object_output(path);
     }
 
     if let Some(options) = insta_options {

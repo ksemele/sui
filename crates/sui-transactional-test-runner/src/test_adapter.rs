@@ -387,6 +387,10 @@ impl MoveTestAdapter<'_> for SuiTestAdapter {
         self.default_syntax
     }
 
+    fn write_object_output(&self, path: &Path) {
+        self.write_object_enumeration_dump(&path.with_extension("objects"));
+    }
+
     async fn init(
         default_syntax: SyntaxChoice,
         pre_compiled_deps: Option<Arc<PreCompiledProgramInfo>>,
@@ -1552,6 +1556,72 @@ fn merge_output(left: Option<String>, right: Option<String>) -> Option<String> {
 }
 
 impl SuiTestAdapter {
+    fn write_object_enumeration_dump(&self, objects_path: &Path) {
+        use std::io::Write;
+        let mut out = String::new();
+        fmt::Write::write_fmt(&mut out, format_args!("=== OBJECT ENUMERATION DUMP ===\n")).unwrap();
+        let mut entries: Vec<_> = self.object_enumeration.iter().collect();
+        entries.sort_by_key(|(_, fake)| *fake);
+        for (real_id, fake_id) in entries {
+            let label = match fake_id {
+                FakeID::Known(id) => format!("  known({id})"),
+                FakeID::Enumerated(task, idx) => format!("  {task},{idx}"),
+            };
+            let detail = match ObjectStore::get_object(&*self.executor, real_id) {
+                Some(obj) => {
+                    let type_str = match &obj.data {
+                        object::Data::Move(move_obj) => {
+                            format!(
+                                "object type={}",
+                                self.stabilize_str(format!("{}", move_obj.type_()))
+                            )
+                        }
+                        object::Data::Package(pkg) => {
+                            let modules = pkg
+                                .serialized_module_map()
+                                .keys()
+                                .map(|s| s.as_str())
+                                .collect::<Vec<_>>()
+                                .join(",");
+                            format!("package type={modules}")
+                        }
+                    };
+                    let owner_str = match obj.owner() {
+                        object::Owner::AddressOwner(addr) => {
+                            format!(
+                                "Account Address ( {} )",
+                                self.stabilize_str(format!("{addr}"))
+                            )
+                        }
+                        object::Owner::ObjectOwner(id) => {
+                            format!("Object( {} )", self.stabilize_str(format!("{id}")))
+                        }
+                        object::Owner::Shared {
+                            initial_shared_version,
+                        } => {
+                            format!("Shared( {} )", initial_shared_version.value())
+                        }
+                        object::Owner::Immutable => "Immutable".to_string(),
+                        object::Owner::ConsensusAddressOwner { owner, .. } => {
+                            format!(
+                                "ConsensusAddressOwner( {} )",
+                                self.stabilize_str(format!("{owner}"))
+                            )
+                        }
+                    };
+                    format!("{type_str} owner={owner_str}")
+                }
+                None => "<not in storage>".to_string(),
+            };
+            fmt::Write::write_fmt(&mut out, format_args!("{label}: {detail}\n")).unwrap();
+        }
+        fmt::Write::write_str(&mut out, "=== END OBJECT ENUMERATION DUMP ===\n").unwrap();
+        let mut file = std::fs::File::create(&objects_path)
+            .unwrap_or_else(|e| panic!("Failed to create {}: {e}", objects_path.display()));
+        file.write_all(out.as_bytes())
+            .unwrap_or_else(|e| panic!("Failed to write {}: {e}", objects_path.display()));
+    }
+
     pub fn with_offchain_reader(&mut self, offchain_reader: Box<dyn OffchainStateReader>) {
         self.offchain_reader = Some(offchain_reader);
     }
@@ -1562,10 +1632,6 @@ impl SuiTestAdapter {
 
     pub fn executor(&self) -> &dyn TransactionalAdapter {
         &*self.executor
-    }
-
-    pub fn into_executor(self) -> Box<dyn TransactionalAdapter> {
-        self.executor
     }
 
     fn get_chain_identifier(&self) -> ChainIdentifier {
