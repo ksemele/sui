@@ -310,6 +310,7 @@ const TESTNET_USDC: &str =
 // Version 117: Update Sui System metadata handling.
 // Version 118: Adds `transfer_migration_cap` to display registry
 // Version 119: Enable the new VM.
+//              Enable bulletproofs verification on devnet.
 
 #[derive(Copy, Clone, Debug, Hash, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 pub struct ProtocolVersion(u64);
