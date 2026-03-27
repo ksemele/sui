@@ -20,13 +20,13 @@ mutated: object(0,0)
 gas summary: computation_cost: 1000000, storage_cost: 9659600,  storage_rebate: 0, non_refundable_storage_fee: 0
 
 task 3, line 37:
-//# view-object 2,0
+//# view-object 2,2
 Owner: Account Address ( A )
 Version: 2
-Contents: a::m::Parent {
+Contents: a::m::Derived {
     id: sui::object::UID {
         id: sui::object::ID {
-            bytes: fake(2,0),
+            bytes: fake(2,2),
         },
     },
 }
@@ -44,13 +44,13 @@ Contents: a::m::Obj {
 }
 
 task 5, line 41:
-//# view-object 2,2
+//# view-object 2,0
 Owner: Account Address ( A )
 Version: 2
-Contents: a::m::Derived {
+Contents: a::m::Parent {
     id: sui::object::UID {
         id: sui::object::ID {
-            bytes: fake(2,2),
+            bytes: fake(2,0),
         },
     },
 }

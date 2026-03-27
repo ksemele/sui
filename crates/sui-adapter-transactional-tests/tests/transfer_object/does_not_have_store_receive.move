@@ -88,9 +88,9 @@ module test::m {
 
 //# run test::m::mint_cup --sender A --type-args u64
 
-//# view-object 6,0
-
 //# view-object 6,1
+
+//# view-object 6,0
 
 //# programmable --sender A --inputs object(6,0) receiving(6,1)
 //> 0: test::m::receive_cup<u64>(Input(0), Input(1));

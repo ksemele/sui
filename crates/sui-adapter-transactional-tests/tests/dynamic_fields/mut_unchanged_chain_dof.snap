@@ -20,67 +20,55 @@ mutated: object(0,0)
 gas summary: computation_cost: 1000000, storage_cost: 26326400,  storage_rebate: 0, non_refundable_storage_fee: 0
 
 task 3, line 78:
-//# view-object 2,8
-Owner: Object ID: ( fake(2,2) )
+//# view-object 2,0
+Owner: Account Address ( A )
 Version: 2
-Contents: sui::dynamic_field::Field<sui::dynamic_object_field::Wrapper<vector<u8>>, sui::object::ID> {
+Contents: test::m1::GreatGrandParent {
     id: sui::object::UID {
         id: sui::object::ID {
-            bytes: fake(2,8),
+            bytes: fake(2,0),
         },
-    },
-    name: sui::dynamic_object_field::Wrapper<vector<u8>> {
-        name: vector[
-            111u8,
-            98u8,
-            106u8,
-        ],
-    },
-    value: sui::object::ID {
-        bytes: fake(2,3),
     },
 }
 
 task 4, lines 80-82:
-//# view-object 2,9
-Owner: Object ID: ( fake(2,5) )
+//# view-object 2,4
+Owner: Shared( 2 )
 Version: 2
-Contents: sui::dynamic_field::Field<sui::dynamic_object_field::Wrapper<vector<u8>>, sui::object::ID> {
+Contents: test::m1::GreatGrandParent {
     id: sui::object::UID {
         id: sui::object::ID {
-            bytes: fake(2,9),
+            bytes: fake(2,4),
         },
-    },
-    name: sui::dynamic_object_field::Wrapper<vector<u8>> {
-        name: vector[
-            112u8,
-        ],
-    },
-    value: sui::object::ID {
-        bytes: fake(2,6),
     },
 }
 
 task 5, line 84:
-//# run test::m1::borrow_mut --sender A --args object(2,8)
-Error: Error checking transaction input objects: Object object(2,8) is owned by object object(2,2). Objects owned by other objects cannot be used as input arguments
+//# run test::m1::borrow_mut --sender A --args object(2,0)
+mutated: object(0,0), object(2,0)
+gas summary: computation_cost: 1000000, storage_cost: 2318000,  storage_rebate: 2294820, non_refundable_storage_fee: 23180
 
 task 6, line 86:
-//# run test::m1::borrow_mut --sender A --args object(2,9)
-Error: Error checking transaction input objects: Object object(2,9) is owned by object object(2,5). Objects owned by other objects cannot be used as input arguments
+//# run test::m1::borrow_mut --sender A --args object(2,4)
+mutated: object(0,0), object(2,4)
+gas summary: computation_cost: 1000000, storage_cost: 2318000,  storage_rebate: 2294820, non_refundable_storage_fee: 23180
 
 task 7, line 88:
-//# run test::m1::add_remove --sender A --args object(2,8)
-Error: Error checking transaction input objects: Object object(2,8) is owned by object object(2,2). Objects owned by other objects cannot be used as input arguments
+//# run test::m1::add_remove --sender A --args object(2,0)
+mutated: object(0,0), object(2,0)
+gas summary: computation_cost: 1000000, storage_cost: 2318000,  storage_rebate: 2294820, non_refundable_storage_fee: 23180
 
 task 8, line 90:
-//# run test::m1::add_remove --sender A --args object(2,9)
-Error: Error checking transaction input objects: Object object(2,9) is owned by object object(2,5). Objects owned by other objects cannot be used as input arguments
+//# run test::m1::add_remove --sender A --args object(2,4)
+mutated: object(0,0), object(2,4)
+gas summary: computation_cost: 1000000, storage_cost: 2318000,  storage_rebate: 2294820, non_refundable_storage_fee: 23180
 
 task 9, line 92:
-//# run test::m1::write_back --sender A --args object(2,8)
-Error: Error checking transaction input objects: Object object(2,8) is owned by object object(2,2). Objects owned by other objects cannot be used as input arguments
+//# run test::m1::write_back --sender A --args object(2,0)
+mutated: object(0,0), object(2,0)
+gas summary: computation_cost: 1000000, storage_cost: 2318000,  storage_rebate: 2294820, non_refundable_storage_fee: 23180
 
 task 10, line 94:
-//# run test::m1::write_back --sender A --args object(2,9)
-Error: Error checking transaction input objects: Object object(2,9) is owned by object object(2,5). Objects owned by other objects cannot be used as input arguments
+//# run test::m1::write_back --sender A --args object(2,4)
+mutated: object(0,0), object(2,4)
+gas summary: computation_cost: 1000000, storage_cost: 2318000,  storage_rebate: 2294820, non_refundable_storage_fee: 23180

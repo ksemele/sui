@@ -1,5 +1,6 @@
 ---
 source: external-crates/move/crates/move-transactional-test-runner/src/framework.rs
+assertion_line: 915
 ---
 processed 21 tasks
 
@@ -44,15 +45,42 @@ gas summary: computation_cost: 1000000, storage_cost: 7030000,  storage_rebate: 
 
 task 7, lines 71-78:
 //# upgrade --package Test_V1 --upgrade-capability 6,1 --dependencies Test_DepV2 Test_DepDepV2 --sender A
-created: object(7,0)
-mutated: object(0,0), object(6,1)
-gas summary: computation_cost: 1000000, storage_cost: 7030000,  storage_rebate: 2595780, non_refundable_storage_fee: 26220
+Error: error[E03002]: unbound module
+   ┌─ /var/folders/wq/yn9hqn9s71s8ktjc6z89b8wr0000gn/T/.tmp5F56l2:73:9
+   │
+73 │     use Test_DepV2::DepM1;
+   │         ^^^^^^^^^^^^^^^^^ Invalid 'use'. Unbound module: 'Test_DepV2::DepM1'
+
+warning[W09002]: unused variable
+   ┌─ /var/folders/wq/yn9hqn9s71s8ktjc6z89b8wr0000gn/T/.tmp5F56l2:74:26
+   │
+74 │     public entry fun baz(ctx: &mut sui::tx_context::TxContext) { DepM1::bar(ctx) }
+   │                          ^^^ Unused parameter 'ctx'. Consider removing or prefixing with an underscore: '_ctx'
+   │
+   = This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+error[E03006]: unexpected name in this position
+   ┌─ /var/folders/wq/yn9hqn9s71s8ktjc6z89b8wr0000gn/T/.tmp5F56l2:74:66
+   │
+74 │     public entry fun baz(ctx: &mut sui::tx_context::TxContext) { DepM1::bar(ctx) }
+   │                                                                  ^^^^^ Could not resolve the name 'DepM1'
+
+
 
 task 8, lines 80-85:
 //# upgrade --package Test_V2 --upgrade-capability 6,1 --dependencies Test_DepV1 Test_DepDepV3 --sender A
-created: object(8,0)
-mutated: object(0,0), object(6,1)
-gas summary: computation_cost: 1000000, storage_cost: 7030000,  storage_rebate: 2595780, non_refundable_storage_fee: 26220
+Error: error[E02001]: duplicate declaration, item, or annotation
+   ┌─ /var/folders/wq/yn9hqn9s71s8ktjc6z89b8wr0000gn/T/.tmpJzo3V0:11:8
+   │
+11 │ module Test_DepDepV1::DepDepM1 {
+   │        ^^^^^^^^^^^^^^^^^^^^^^^ Duplicate definition for module '(Test_DepDepV1=0x0)::DepDepM1'
+   │
+   ┌─ /var/folders/wq/yn9hqn9s71s8ktjc6z89b8wr0000gn/T/.tmp8Z4qgO:31:8
+   │
+31 │ module Test_DepDepV3::DepDepM1 {
+   │        ----------------------- Module previously defined here, with '(Test_DepDepV3=0x0)::DepDepM1'
+
+
 
 task 9, line 87:
 //# run Test_V1::M1::baz
@@ -64,7 +92,7 @@ task 10, line 89:
 //# view-object 9,0
 Owner: Shared( 2 )
 Version: 2
-Contents: Test_DepDepV1::DepDepM1::Obj {
+Contents: Test_DepDepV2::DepDepM1::Obj {
     id: sui::object::UID {
         id: sui::object::ID {
             bytes: fake(9,0),
@@ -75,87 +103,81 @@ Contents: Test_DepDepV1::DepDepM1::Obj {
 
 task 11, line 91:
 //# run Test_V2::M1::baz
-created: object(11,0)
-mutated: object(0,1)
-gas summary: computation_cost: 1000000, storage_cost: 2325600,  storage_rebate: 978120, non_refundable_storage_fee: 9880
+Error: Error checking transaction input objects: Dependent package not found on-chain: 0x0000000000000000000000000000000000000000000000000000000000000000
 
 task 12, line 93:
 //# view-object 11,0
-Owner: Shared( 3 )
-Version: 3
-Contents: Test_DepDepV1::DepDepM1::Obj {
-    id: sui::object::UID {
-        id: sui::object::ID {
-            bytes: fake(11,0),
-        },
-    },
-    v: 7u64,
-}
+Error: task 12, lines 93-93
+//# view-object 11,0
+. Unbound fake id 11,0
 
 task 13, line 95:
 //# run Test_V3::M1::baz
-created: object(13,0)
-mutated: object(0,1)
-gas summary: computation_cost: 1000000, storage_cost: 2325600,  storage_rebate: 978120, non_refundable_storage_fee: 9880
+Error: Error checking transaction input objects: Dependent package not found on-chain: 0x0000000000000000000000000000000000000000000000000000000000000000
 
 task 14, lines 97-100:
 //# view-object 13,0
-Owner: Shared( 4 )
-Version: 4
-Contents: Test_DepDepV1::DepDepM1::Obj {
-    id: sui::object::UID {
-        id: sui::object::ID {
-            bytes: fake(13,0),
-        },
-    },
-    v: 0u64,
-}
+Error: task 14, lines 97-97
+//# view-object 13,0
+. Unbound fake id 13,0
 
 task 15, lines 101-103:
 //# programmable --sender A
 //> 0: Test_V2::M1::baz();
 //> 1: Test_V3::M1::baz();
-created: object(15,0), object(15,1)
-mutated: object(0,0)
-gas summary: computation_cost: 1000000, storage_cost: 3663200,  storage_rebate: 978120, non_refundable_storage_fee: 9880
+Error: Error checking transaction input objects: Dependent package not found on-chain: 0x0000000000000000000000000000000000000000000000000000000000000000
 
 task 16, line 105:
 //# view-object 15,0
-Owner: Shared( 10 )
-Version: 10
-Contents: Test_DepDepV1::DepDepM1::Obj {
-    id: sui::object::UID {
-        id: sui::object::ID {
-            bytes: fake(15,0),
-        },
-    },
-    v: 7u64,
-}
+Error: task 16, lines 105-105
+//# view-object 15,0
+. Unbound fake id 15,0
 
 task 17, lines 107-112:
 //# view-object 15,1
-Owner: Shared( 10 )
-Version: 10
-Contents: Test_DepDepV1::DepDepM1::Obj {
-    id: sui::object::UID {
-        id: sui::object::ID {
-            bytes: fake(15,1),
-        },
-    },
-    v: 0u64,
-}
+Error: task 17, lines 107-107
+//# view-object 15,1
+. Unbound fake id 15,1
 
 task 18, lines 114-120:
 //# upgrade --package Test_V3 --upgrade-capability 6,1 --dependencies Test_DepDepV1 --sender A
-Error: Transaction Effects Status: Publish/Upgrade Error, Missing dependency. A dependency of a published or upgraded package has not been assigned an on-chain address.
-Execution Error: ExecutionError: ExecutionError { inner: ExecutionErrorInner { kind: PublishUpgradeMissingDependency, source: None, command: Some(1) } }
+Error: error[E02001]: duplicate declaration, item, or annotation
+   ┌─ /var/folders/wq/yn9hqn9s71s8ktjc6z89b8wr0000gn/T/.tmpJzo3V0:11:8
+   │
+11 │ module Test_DepDepV1::DepDepM1 {
+   │        ^^^^^^^^^^^^^^^^^^^^^^^ Duplicate definition for module '(Test_DepDepV1=0x0)::DepDepM1'
+   │
+   ┌─ /var/folders/wq/yn9hqn9s71s8ktjc6z89b8wr0000gn/T/.tmp8Z4qgO:31:8
+   │
+31 │ module Test_DepDepV3::DepDepM1 {
+   │        ----------------------- Module previously defined here, with '(Test_DepDepV3=0x0)::DepDepM1'
+
+
 
 task 19, lines 122-128:
 //# upgrade --package Test_V3 --upgrade-capability 6,1 --dependencies Test_DepV2 --sender A
-Error: Transaction Effects Status: Publish/Upgrade Error, Missing dependency. A dependency of a published or upgraded package has not been assigned an on-chain address.
-Execution Error: ExecutionError: ExecutionError { inner: ExecutionErrorInner { kind: PublishUpgradeMissingDependency, source: None, command: Some(1) } }
+Error: error[E02001]: duplicate declaration, item, or annotation
+   ┌─ /var/folders/wq/yn9hqn9s71s8ktjc6z89b8wr0000gn/T/.tmpJzo3V0:11:8
+   │
+11 │ module Test_DepDepV1::DepDepM1 {
+   │        ^^^^^^^^^^^^^^^^^^^^^^^ Duplicate definition for module '(Test_DepDepV1=0x0)::DepDepM1'
+   │
+   ┌─ /var/folders/wq/yn9hqn9s71s8ktjc6z89b8wr0000gn/T/.tmp8Z4qgO:31:8
+   │
+31 │ module Test_DepDepV3::DepDepM1 {
+   │        ----------------------- Module previously defined here, with '(Test_DepDepV3=0x0)::DepDepM1'
+
+
 
 task 20, lines 130-134:
 //# upgrade --package Test_V3 --upgrade-capability 6,1 --dependencies Test_DepV2 Test_DepDepV1 --sender A
-Error: Transaction Effects Status: Publish/Upgrade Error, Dependency downgrade. Indirect (transitive) dependency of published or upgraded package has been assigned an on-chain version that is less than the version required by one of the package's transitive dependencies.
-Execution Error: ExecutionError: ExecutionError { inner: ExecutionErrorInner { kind: PublishUpgradeDependencyDowngrade, source: None, command: Some(1) } }
+Error: error[E02001]: duplicate declaration, item, or annotation
+   ┌─ /var/folders/wq/yn9hqn9s71s8ktjc6z89b8wr0000gn/T/.tmpJzo3V0:11:8
+   │
+11 │ module Test_DepDepV1::DepDepM1 {
+   │        ^^^^^^^^^^^^^^^^^^^^^^^ Duplicate definition for module '(Test_DepDepV1=0x0)::DepDepM1'
+   │
+   ┌─ /var/folders/wq/yn9hqn9s71s8ktjc6z89b8wr0000gn/T/.tmp8Z4qgO:31:8
+   │
+31 │ module Test_DepDepV3::DepDepM1 {
+   │        ----------------------- Module previously defined here, with '(Test_DepDepV3=0x0)::DepDepM1'

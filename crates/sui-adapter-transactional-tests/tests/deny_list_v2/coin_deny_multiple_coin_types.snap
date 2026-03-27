@@ -15,91 +15,43 @@ unchanged_shared: 0x000000000000000000000000000000000000000000000000000000000000
 gas summary: computation_cost: 1000000, storage_cost: 34260800,  storage_rebate: 0, non_refundable_storage_fee: 0
 
 task 2, lines 63-65:
-//# view-object 1,1
-Owner: Immutable
+//# view-object 1,5
+Owner: Account Address ( A )
 Version: 2
-Contents: sui::coin::TreasuryCap<test::regulated_coin1::REGULATED_COIN1> {
+Contents: sui::coin::Coin<test::regulated_coin1::REGULATED_COIN1> {
     id: sui::object::UID {
         id: sui::object::ID {
-            bytes: fake(1,1),
+            bytes: fake(1,5),
         },
     },
-    total_supply: sui::balance::Supply<test::regulated_coin1::REGULATED_COIN1> {
+    balance: sui::balance::Balance<test::regulated_coin1::REGULATED_COIN1> {
         value: 10000u64,
     },
 }
 
 task 3, lines 66-68:
-//# view-object 1,2
-Owner: Immutable
+//# view-object 1,10
+Owner: Account Address ( A )
 Version: 2
-Contents: sui::coin::CoinMetadata<test::regulated_coin1::REGULATED_COIN1> {
+Contents: sui::coin::Coin<test::regulated_coin2::REGULATED_COIN2> {
     id: sui::object::UID {
         id: sui::object::ID {
-            bytes: fake(1,2),
+            bytes: fake(1,10),
         },
     },
-    decimals: 9u8,
-    name: std::string::String {
-        bytes: vector[
-            82u8,
-            69u8,
-            71u8,
-            85u8,
-            76u8,
-            65u8,
-            84u8,
-            69u8,
-            68u8,
-            95u8,
-            67u8,
-            79u8,
-            73u8,
-            78u8,
-        ],
-    },
-    symbol: std::ascii::String {
-        bytes: vector[
-            82u8,
-            67u8,
-        ],
-    },
-    description: std::string::String {
-        bytes: vector[
-            65u8,
-            32u8,
-            110u8,
-            101u8,
-            119u8,
-            32u8,
-            114u8,
-            101u8,
-            103u8,
-            117u8,
-            108u8,
-            97u8,
-            116u8,
-            101u8,
-            100u8,
-            32u8,
-            99u8,
-            111u8,
-            105u8,
-            110u8,
-        ],
-    },
-    icon_url: std::option::Option<sui::url::Url> {
-        vec: vector[],
+    balance: sui::balance::Balance<test::regulated_coin2::REGULATED_COIN2> {
+        value: 10000u64,
     },
 }
 
 task 4, line 69:
-//# run sui::coin::deny_list_v2_add --args object(0x403) object(1,6) @A --type-args test::regulated_coin2::REGULATED_COIN2 --sender A
-Error: Transaction Effects Status: Invalid command argument at 1. The type of the value does not match the expected type
-Debug of error: CommandArgumentError { arg_idx: 1, kind: TypeMismatch } at command Some(0)
+//# run sui::coin::deny_list_v2_add --args object(0x403) object(1,8) @A --type-args test::regulated_coin2::REGULATED_COIN2 --sender A
+events: Event { package_id: sui, transaction_module: Identifier("coin"), sender: A, type_: StructTag { address: sui, module: Identifier("deny_list"), name: Identifier("PerTypeConfigCreated"), type_params: [] }, contents: [0, 0, 0, 0, 0, 0, 0, 0, 98, 101, 100, 100, 50, 98, 100, 54, 51, 99, 50, 51, 102, 99, 52, 54, 52, 55, 102, 51, 101, 99, 101, 57, 48, 55, 57, 57, 49, 51, 102, 53, 99, 49, 98, 52, 98, 55, 97, 101, 101, 52, 56, 51, 50, 51, 55, 50, 97, 102, 52, 48, 99, 100, 48, 51, 49, 57, 50, 101, 97, 48, 52, 51, 97, 58, 58, 114, 101, 103, 117, 108, 97, 116, 101, 100, 95, 99, 111, 105, 110, 50, 58, 58, 82, 69, 71, 85, 76, 65, 84, 69, 68, 95, 67, 79, 73, 78, 50, 157, 35, 217, 228, 182, 26, 20, 142, 175, 244, 33, 216, 213, 187, 161, 23, 168, 25, 82, 72, 79, 110, 47, 210, 76, 90, 37, 190, 166, 158, 5, 16] }
+created: object(4,0), object(4,1), object(4,2)
+mutated: 0x0000000000000000000000000000000000000000000000000000000000000403, object(0,0), object(1,8)
+gas summary: computation_cost: 1000000, storage_cost: 12220800,  storage_rebate: 2761308, non_refundable_storage_fee: 27892
 
 task 5, lines 71-72:
-//# programmable --sender A --inputs object(1,1) object(1,2) @A
+//# programmable --sender A --inputs object(1,5) object(1,10) @A
 //> TransferObjects([Input(0), Input(1)], Input(2))
-Error: Transaction Effects Status: Invalid command argument at 0. Immutable objects cannot be passed by-value.
-Execution Error: ExecutionError: ExecutionError { inner: ExecutionErrorInner { kind: CommandArgumentError { arg_idx: 0, kind: InvalidObjectByValue }, source: None, command: Some(0) } }
+Error: Error checking transaction input objects: Address @A is denied for coin object(1,0)::regulated_coin2::REGULATED_COIN2

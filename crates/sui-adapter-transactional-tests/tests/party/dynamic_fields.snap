@@ -22,18 +22,6 @@ mutated: object(0,0)
 gas summary: computation_cost: 1000000, storage_cost: 3473200,  storage_rebate: 0, non_refundable_storage_fee: 0
 
 task 3, lines 41-43:
-//# view-object 2,0
-Owner: Account Address ( A )
-Version: 2
-Contents: ex::m::Parent {
-    id: sui::object::UID {
-        id: sui::object::ID {
-            bytes: fake(2,0),
-        },
-    },
-}
-
-task 4, lines 44-46:
 //# view-object 2,1
 Owner: ConsensusAddressOwner( 2, A )
 Version: 2
@@ -45,16 +33,10 @@ Contents: ex::m::Child {
     },
 }
 
-task 5, lines 47-48:
-//# programmable --sender A --inputs object(2,0) object(2,1)
-//> ex::m::add_df(Input(1), Input(0))
-Error: Transaction Effects Status: Invalid command argument at 0. The type of the value does not match the expected type
-Debug of error: CommandArgumentError { arg_idx: 0, kind: TypeMismatch } at command Some(0)
-
-task 6, line 50:
+task 4, lines 44-46:
 //# view-object 2,0
 Owner: Account Address ( A )
-Version: 3
+Version: 2
 Contents: ex::m::Parent {
     id: sui::object::UID {
         id: sui::object::ID {
@@ -63,42 +45,73 @@ Contents: ex::m::Parent {
     },
 }
 
+task 5, lines 47-48:
+//# programmable --sender A --inputs object(2,1) object(2,0)
+//> ex::m::add_df(Input(1), Input(0))
+created: object(5,0)
+mutated: object(0,0), object(2,0), object(2,1)
+gas summary: computation_cost: 1000000, storage_cost: 5928000,  storage_rebate: 3438468, non_refundable_storage_fee: 34732
+
+task 6, line 50:
+//# view-object 2,1
+Owner: Object ID: ( fake(5,0) )
+Version: 3
+Contents: ex::m::Child {
+    id: sui::object::UID {
+        id: sui::object::ID {
+            bytes: fake(2,1),
+        },
+    },
+}
+
 task 7, lines 52-54:
 //# view-object 5,0
-Error: task 7, lines 52-52
-//# view-object 5,0
-. Unbound fake id 5,0
+Owner: Object ID: ( fake(2,0) )
+Version: 3
+Contents: sui::dynamic_field::Field<sui::dynamic_object_field::Wrapper<u64>, sui::object::ID> {
+    id: sui::object::UID {
+        id: sui::object::ID {
+            bytes: fake(5,0),
+        },
+    },
+    name: sui::dynamic_object_field::Wrapper<u64> {
+        name: 0u64,
+    },
+    value: sui::object::ID {
+        bytes: fake(2,1),
+    },
+}
 
 task 8, lines 55-59:
-//# programmable --inputs object(2,0) @A --sender A
+//# programmable --inputs object(2,1) @A --sender A
 //> 0: sui::party::single_owner(Input(1));
 //> sui::transfer::public_party_transfer<ex::m::A>(Input(0), Result(0))
 // Pull the object back out.
-Error: Transaction Effects Status: Error for type argument at index 0: A type was not found in the module specified.
-Execution Error: ExecutionError: ExecutionError { inner: ExecutionErrorInner { kind: TypeArgumentError { argument_idx: 0, kind: TypeNotFound }, source: None, command: Some(1) } }
+Error: Error checking transaction input objects: Object object(2,1) is owned by object object(5,0). Objects owned by other objects cannot be used as input arguments
 
 task 9, lines 60-63:
-//# programmable --sender A --inputs object(2,1)
+//# programmable --sender A --inputs object(2,0)
 //> ex::m::remove_df(Input(0))
 // Verify it can again be transferred to a different party.
-Error: Transaction Effects Status: Invalid command argument at 0. The type of the value does not match the expected type
-Debug of error: CommandArgumentError { arg_idx: 0, kind: TypeMismatch } at command Some(0)
+mutated: object(0,0), object(2,0), object(2,1)
+deleted: object(5,0)
+gas summary: computation_cost: 1000000, storage_cost: 3473200,  storage_rebate: 5868720, non_refundable_storage_fee: 59280
 
 task 10, lines 64-66:
-//# programmable --inputs object(2,0) @B --sender A
+//# programmable --inputs object(2,1) @B --sender A
 //> 0: sui::party::single_owner(Input(1));
 //> sui::transfer::public_party_transfer<ex::m::Child>(Input(0), Result(0))
-Error: Transaction Effects Status: Invalid command argument at 0. The type of the value does not match the expected type
-Execution Error: ExecutionError: ExecutionError { inner: ExecutionErrorInner { kind: CommandArgumentError { arg_idx: 0, kind: TypeMismatch }, source: None, command: Some(1) } }
+mutated: object(0,0), object(2,1)
+gas summary: computation_cost: 1000000, storage_cost: 2226800,  storage_rebate: 2204532, non_refundable_storage_fee: 22268
 
 task 11, line 68:
-//# view-object 2,0
-Owner: Account Address ( A )
-Version: 6
-Contents: ex::m::Parent {
+//# view-object 2,1
+Owner: ConsensusAddressOwner( 5, B )
+Version: 5
+Contents: ex::m::Child {
     id: sui::object::UID {
         id: sui::object::ID {
-            bytes: fake(2,0),
+            bytes: fake(2,1),
         },
     },
 }

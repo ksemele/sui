@@ -20,135 +20,55 @@ mutated: object(0,0)
 gas summary: computation_cost: 1000000, storage_cost: 11871200,  storage_rebate: 0, non_refundable_storage_fee: 0
 
 task 3, line 67:
-//# view-object 2,4
-Owner: Object ID: ( fake(2,1) )
+//# view-object 2,0
+Owner: Account Address ( A )
 Version: 2
-Contents: sui::dynamic_field::Field<vector<u8>, test::m1::Value> {
+Contents: test::m1::Object {
     id: sui::object::UID {
         id: sui::object::ID {
-            bytes: fake(2,4),
+            bytes: fake(2,0),
         },
-    },
-    name: vector[
-        118u8,
-        97u8,
-        108u8,
-        117u8,
-        101u8,
-    ],
-    value: test::m1::Value {
-        data: vector[
-            252u8,
-            204u8,
-            154u8,
-            66u8,
-            27u8,
-            187u8,
-            19u8,
-            193u8,
-            166u8,
-            106u8,
-            26u8,
-            169u8,
-            143u8,
-            10u8,
-            215u8,
-            80u8,
-            41u8,
-            237u8,
-            233u8,
-            72u8,
-            87u8,
-            119u8,
-            156u8,
-            105u8,
-            21u8,
-            180u8,
-            79u8,
-            148u8,
-            6u8,
-            139u8,
-            146u8,
-            30u8,
-        ],
     },
 }
 
 task 4, lines 69-71:
-//# view-object 2,5
-Owner: Object ID: ( fake(2,0) )
+//# view-object 2,1
+Owner: Shared( 2 )
 Version: 2
-Contents: sui::dynamic_field::Field<vector<u8>, test::m1::Value> {
+Contents: test::m1::Object {
     id: sui::object::UID {
         id: sui::object::ID {
-            bytes: fake(2,5),
+            bytes: fake(2,1),
         },
-    },
-    name: vector[
-        118u8,
-        97u8,
-        108u8,
-        117u8,
-        101u8,
-    ],
-    value: test::m1::Value {
-        data: vector[
-            252u8,
-            204u8,
-            154u8,
-            66u8,
-            27u8,
-            187u8,
-            19u8,
-            193u8,
-            166u8,
-            106u8,
-            26u8,
-            169u8,
-            143u8,
-            10u8,
-            215u8,
-            80u8,
-            41u8,
-            237u8,
-            233u8,
-            72u8,
-            87u8,
-            119u8,
-            156u8,
-            105u8,
-            21u8,
-            180u8,
-            79u8,
-            148u8,
-            6u8,
-            139u8,
-            146u8,
-            30u8,
-        ],
     },
 }
 
 task 5, line 73:
-//# run test::m1::borrow_mut --sender A --args object(2,4)
-Error: Error checking transaction input objects: Object object(2,4) is owned by object object(2,1). Objects owned by other objects cannot be used as input arguments
+//# run test::m1::borrow_mut --sender A --args object(2,0)
+mutated: object(0,0), object(2,0)
+gas summary: computation_cost: 1000000, storage_cost: 2242000,  storage_rebate: 2219580, non_refundable_storage_fee: 22420
 
 task 6, line 75:
-//# run test::m1::borrow_mut --sender A --args object(2,5)
-Error: Error checking transaction input objects: Object object(2,5) is owned by object object(2,0). Objects owned by other objects cannot be used as input arguments
+//# run test::m1::borrow_mut --sender A --args object(2,1)
+mutated: object(0,0), object(2,1)
+gas summary: computation_cost: 1000000, storage_cost: 2242000,  storage_rebate: 2219580, non_refundable_storage_fee: 22420
 
 task 7, line 77:
-//# run test::m1::add_remove --sender A --args object(2,4)
-Error: Error checking transaction input objects: Object object(2,4) is owned by object object(2,1). Objects owned by other objects cannot be used as input arguments
+//# run test::m1::add_remove --sender A --args object(2,0)
+mutated: object(0,0), object(2,0)
+gas summary: computation_cost: 1000000, storage_cost: 2242000,  storage_rebate: 2219580, non_refundable_storage_fee: 22420
 
 task 8, line 79:
-//# run test::m1::add_remove --sender A --args object(2,5)
-Error: Error checking transaction input objects: Object object(2,5) is owned by object object(2,0). Objects owned by other objects cannot be used as input arguments
+//# run test::m1::add_remove --sender A --args object(2,1)
+mutated: object(0,0), object(2,1)
+gas summary: computation_cost: 1000000, storage_cost: 2242000,  storage_rebate: 2219580, non_refundable_storage_fee: 22420
 
 task 9, line 81:
-//# run test::m1::write_back --sender A --args object(2,4)
-Error: Error checking transaction input objects: Object object(2,4) is owned by object object(2,1). Objects owned by other objects cannot be used as input arguments
+//# run test::m1::write_back --sender A --args object(2,0)
+mutated: object(0,0), object(2,0)
+gas summary: computation_cost: 1000000, storage_cost: 2242000,  storage_rebate: 2219580, non_refundable_storage_fee: 22420
 
 task 10, line 83:
-//# run test::m1::write_back --sender A --args object(2,5)
-Error: Error checking transaction input objects: Object object(2,5) is owned by object object(2,0). Objects owned by other objects cannot be used as input arguments
+//# run test::m1::write_back --sender A --args object(2,1)
+mutated: object(0,0), object(2,1)
+gas summary: computation_cost: 1000000, storage_cost: 2242000,  storage_rebate: 2219580, non_refundable_storage_fee: 22420

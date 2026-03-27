@@ -20,25 +20,21 @@ mutated: object(0,0)
 gas summary: computation_cost: 1000000, storage_cost: 15298800,  storage_rebate: 0, non_refundable_storage_fee: 0
 
 task 3, line 80:
-//# view-object 2,0
-Owner: Account Address ( A )
+//# view-object 2,4
+Owner: Object ID: ( _ )
 Version: 2
-Contents: tto::M1::A {
+Contents: sui::dynamic_field::Field<sui::dynamic_object_field::Wrapper<u64>, sui::object::ID> {
     id: sui::object::UID {
         id: sui::object::ID {
-            bytes: fake(2,0),
+            bytes: fake(2,4),
         },
     },
-    value: vector[
-        97u8,
-        95u8,
-        112u8,
-        97u8,
-        114u8,
-        101u8,
-        110u8,
-        116u8,
-    ],
+    name: sui::dynamic_object_field::Wrapper<u64> {
+        name: 1u64,
+    },
+    value: sui::object::ID {
+        bytes: fake(2,2),
+    },
 }
 
 task 4, line 82:
@@ -64,6 +60,96 @@ Contents: tto::M1::A {
 }
 
 task 5, line 84:
+//# view-object 2,6
+Owner: Object ID: ( _ )
+Version: 2
+Contents: sui::dynamic_field::Field<u64, tto::M1::A> {
+    id: sui::object::UID {
+        id: sui::object::ID {
+            bytes: fake(2,6),
+        },
+    },
+    name: 0u64,
+    value: tto::M1::A {
+        id: sui::object::UID {
+            id: sui::object::ID {
+                bytes: _,
+            },
+        },
+        value: vector[
+            98u8,
+            95u8,
+            99u8,
+            104u8,
+            105u8,
+            108u8,
+            100u8,
+            95u8,
+            99u8,
+            104u8,
+            105u8,
+            108u8,
+            100u8,
+        ],
+    },
+}
+
+task 6, line 86:
+//# view-object 2,7
+Owner: Object ID: ( _ )
+Version: 2
+Contents: sui::dynamic_field::Field<u64, tto::M1::A> {
+    id: sui::object::UID {
+        id: sui::object::ID {
+            bytes: fake(2,7),
+        },
+    },
+    name: 0u64,
+    value: tto::M1::A {
+        id: sui::object::UID {
+            id: sui::object::ID {
+                bytes: _,
+            },
+        },
+        value: vector[
+            119u8,
+            114u8,
+            97u8,
+            112u8,
+            112u8,
+            101u8,
+            100u8,
+            95u8,
+            100u8,
+            111u8,
+            102u8,
+        ],
+    },
+}
+
+task 7, line 88:
+//# view-object 2,0
+Owner: Account Address ( A )
+Version: 2
+Contents: tto::M1::A {
+    id: sui::object::UID {
+        id: sui::object::ID {
+            bytes: fake(2,0),
+        },
+    },
+    value: vector[
+        97u8,
+        95u8,
+        112u8,
+        97u8,
+        114u8,
+        101u8,
+        110u8,
+        116u8,
+    ],
+}
+
+task 8, line 90:
 //# view-object 2,2
 Owner: Object ID: ( fake(2,4) )
 Version: 2
@@ -92,81 +178,6 @@ Contents: tto::M1::A {
         111u8,
         102u8,
     ],
-}
-
-task 6, line 86:
-//# view-object 2,3
-Owner: Account Address ( fake(2,0) )
-Version: 2
-Contents: tto::M1::Wrapper<tto::M1::A> {
-    id: sui::object::UID {
-        id: sui::object::ID {
-            bytes: fake(2,3),
-        },
-    },
-    value: tto::M1::A {
-        id: sui::object::UID {
-            id: sui::object::ID {
-                bytes: _,
-            },
-        },
-        value: vector[
-            119u8,
-            114u8,
-            97u8,
-            112u8,
-            112u8,
-            101u8,
-            100u8,
-        ],
-    },
-}
-
-task 7, line 88:
-//# view-object 2,4
-Owner: Object ID: ( _ )
-Version: 2
-Contents: sui::dynamic_field::Field<sui::dynamic_object_field::Wrapper<u64>, sui::object::ID> {
-    id: sui::object::UID {
-        id: sui::object::ID {
-            bytes: fake(2,4),
-        },
-    },
-    name: sui::dynamic_object_field::Wrapper<u64> {
-        name: 1u64,
-    },
-    value: sui::object::ID {
-        bytes: fake(2,2),
-    },
-}
-
-task 8, line 90:
-//# view-object 2,5
-Owner: Object ID: ( fake(2,1) )
-Version: 2
-Contents: sui::dynamic_field::Field<u64, tto::M1::A> {
-    id: sui::object::UID {
-        id: sui::object::ID {
-            bytes: fake(2,5),
-        },
-    },
-    name: 0u64,
-    value: tto::M1::A {
-        id: sui::object::UID {
-            id: sui::object::ID {
-                bytes: _,
-            },
-        },
-        value: vector[
-            98u8,
-            95u8,
-            99u8,
-            104u8,
-            105u8,
-            108u8,
-            100u8,
-        ],
-    },
 }
 
 task 9, line 92:
@@ -238,13 +249,13 @@ Contents: sui::dynamic_field::Field<u64, tto::M1::A> {
 }
 
 task 11, line 98:
-//# run tto::M1::receive_b_parent --args object(2,4) receiving(2,7) --sender A
-Error: Error checking transaction input objects: Object object(2,4) is owned by object 0x5d56ad49a87bd11b1a22d39364f9075100e893e7d07e65dbb6ec2acc222148ed. Objects owned by other objects cannot be used as input arguments
+//# run tto::M1::receive_b_parent --args object(2,0) receiving(2,7) --sender A
+Error: Error checking transaction input objects: Object object(2,7) is owned by object 0x525950a39d2ac9a765204b231b1e9c2668bb023fd3dbd121a7396064f6f203aa. Objects owned by other objects cannot be used as input arguments
 
 task 12, line 100:
-//# run tto::M1::receive_b_parent --args object(2,4) receiving(2,6) --sender A
-Error: Error checking transaction input objects: Object object(2,4) is owned by object 0x5d56ad49a87bd11b1a22d39364f9075100e893e7d07e65dbb6ec2acc222148ed. Objects owned by other objects cannot be used as input arguments
+//# run tto::M1::receive_b_parent --args object(2,0) receiving(2,6) --sender A
+Error: Error checking transaction input objects: Object object(2,6) is owned by object 0x5d56ad49a87bd11b1a22d39364f9075100e893e7d07e65dbb6ec2acc222148ed. Objects owned by other objects cannot be used as input arguments
 
 task 13, line 102:
-//# run tto::M1::receive_wrapped --args object(2,4) receiving(2,7) --sender A
-Error: Error checking transaction input objects: Object object(2,4) is owned by object 0x5d56ad49a87bd11b1a22d39364f9075100e893e7d07e65dbb6ec2acc222148ed. Objects owned by other objects cannot be used as input arguments
+//# run tto::M1::receive_wrapped --args object(2,0) receiving(2,7) --sender A
+Error: Error checking transaction input objects: Object object(2,7) is owned by object 0x525950a39d2ac9a765204b231b1e9c2668bb023fd3dbd121a7396064f6f203aa. Objects owned by other objects cannot be used as input arguments

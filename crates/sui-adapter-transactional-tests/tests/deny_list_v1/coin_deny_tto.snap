@@ -15,25 +15,37 @@ unchanged_shared: 0x000000000000000000000000000000000000000000000000000000000000
 gas summary: computation_cost: 1000000, storage_cost: 21766400,  storage_rebate: 0, non_refundable_storage_fee: 0
 
 task 2, line 49:
+//# view-object 1,6
+Owner: Account Address ( A )
+Version: 2
+Contents: test::regulated_coin::Wallet {
+    id: sui::object::UID {
+        id: sui::object::ID {
+            bytes: fake(1,6),
+        },
+    },
+}
+
+task 3, line 51:
 //# view-object 1,0
 1,0::regulated_coin
 
-task 3, line 51:
-//# view-object 1,1
-Owner: Immutable
+task 4, line 53:
+//# view-object 1,5
+Owner: Account Address ( fake(1,6) )
 Version: 2
-Contents: sui::coin::TreasuryCap<test::regulated_coin::REGULATED_COIN> {
+Contents: sui::coin::Coin<test::regulated_coin::REGULATED_COIN> {
     id: sui::object::UID {
         id: sui::object::ID {
-            bytes: fake(1,1),
+            bytes: fake(1,5),
         },
     },
-    total_supply: sui::balance::Supply<test::regulated_coin::REGULATED_COIN> {
+    balance: sui::balance::Balance<test::regulated_coin::REGULATED_COIN> {
         value: 10000u64,
     },
 }
 
-task 4, line 53:
+task 5, line 55:
 //# view-object 1,2
 Owner: Immutable
 Version: 2
@@ -97,7 +109,7 @@ Contents: sui::coin::CoinMetadata<test::regulated_coin::REGULATED_COIN> {
     },
 }
 
-task 5, line 55:
+task 6, line 57:
 //# view-object 1,3
 Owner: Account Address ( A )
 Version: 2
@@ -109,7 +121,7 @@ Contents: sui::coin::DenyCap<test::regulated_coin::REGULATED_COIN> {
     },
 }
 
-task 6, line 57:
+task 7, line 59:
 //# view-object 1,4
 Owner: Immutable
 Version: 2
@@ -127,47 +139,39 @@ Contents: sui::coin::RegulatedCoinMetadata<test::regulated_coin::REGULATED_COIN>
     },
 }
 
-task 7, line 59:
-//# view-object 1,5
-Owner: Account Address ( fake(1,6) )
+task 8, lines 61-63:
+//# view-object 1,1
+Owner: Immutable
 Version: 2
-Contents: sui::coin::Coin<test::regulated_coin::REGULATED_COIN> {
+Contents: sui::coin::TreasuryCap<test::regulated_coin::REGULATED_COIN> {
     id: sui::object::UID {
         id: sui::object::ID {
-            bytes: fake(1,5),
+            bytes: fake(1,1),
         },
     },
-    balance: sui::balance::Balance<test::regulated_coin::REGULATED_COIN> {
+    total_supply: sui::balance::Supply<test::regulated_coin::REGULATED_COIN> {
         value: 10000u64,
     },
 }
 
-task 8, lines 61-63:
-//# view-object 1,6
-Owner: Account Address ( A )
-Version: 2
-Contents: test::regulated_coin::Wallet {
-    id: sui::object::UID {
-        id: sui::object::ID {
-            bytes: fake(1,6),
-        },
-    },
-}
-
 task 9, lines 64-66:
-//# run sui::coin::deny_list_add --args object(0x403) object(1,4) @A --type-args test::regulated_coin::REGULATED_COIN --sender A
-Error: Transaction Effects Status: Invalid command argument at 1. The type of the value does not match the expected type
-Debug of error: CommandArgumentError { arg_idx: 1, kind: TypeMismatch } at command Some(0)
+//# run sui::coin::deny_list_add --args object(0x403) object(1,3) @A --type-args test::regulated_coin::REGULATED_COIN --sender A
+created: object(9,0), object(9,1)
+mutated: object(_), 0x0000000000000000000000000000000000000000000000000000000000000403, object(0,0), object(1,3)
+gas summary: computation_cost: 1000000, storage_cost: 11415200,  storage_rebate: 2723688, non_refundable_storage_fee: 27512
 
 task 10, lines 67-69:
-//# run test::regulated_coin::receive_coin --args object(1,0) receiving(1,2) --sender A
-Error: Error checking transaction input objects: A move object is expected, instead a move package is passed: object(1,0)
+//# run test::regulated_coin::receive_coin --args object(1,6) receiving(1,5) --sender A
+Error: Error checking transaction input objects: Address @A is denied for coin object(1,0)::regulated_coin::REGULATED_COIN
 
 task 11, lines 70-72:
-//# run sui::coin::deny_list_remove --args object(0x403) object(1,4) @A --type-args test::regulated_coin::REGULATED_COIN --sender A
-Error: Transaction Effects Status: Invalid command argument at 1. The type of the value does not match the expected type
-Debug of error: CommandArgumentError { arg_idx: 1, kind: TypeMismatch } at command Some(0)
+//# run sui::coin::deny_list_remove --args object(0x403) object(1,3) @A --type-args test::regulated_coin::REGULATED_COIN --sender A
+mutated: object(_), 0x0000000000000000000000000000000000000000000000000000000000000403, object(0,0), object(1,3), object(9,1)
+deleted: object(9,0)
+gas summary: computation_cost: 1000000, storage_cost: 9522800,  storage_rebate: 11301048, non_refundable_storage_fee: 114152
 
 task 12, line 73:
-//# run test::regulated_coin::receive_coin --args object(1,0) receiving(1,2) --sender A
-Error: Error checking transaction input objects: A move object is expected, instead a move package is passed: object(1,0)
+//# run test::regulated_coin::receive_coin --args object(1,6) receiving(1,5) --sender A
+mutated: object(0,0), object(1,5), object(1,6)
+unchanged_shared: 0x0000000000000000000000000000000000000000000000000000000000000403
+gas summary: computation_cost: 1000000, storage_cost: 3807600,  storage_rebate: 3769524, non_refundable_storage_fee: 38076

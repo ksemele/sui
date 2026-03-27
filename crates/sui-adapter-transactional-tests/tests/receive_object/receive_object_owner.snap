@@ -46,27 +46,22 @@ Contents: tto::M1::A {
 }
 
 task 5, lines 36-38:
-//# view-object 2,2
-Owner: Object ID: ( fake(2,0) )
+//# view-object 2,0
+Owner: Account Address ( A )
 Version: 2
-Contents: sui::dynamic_field::Field<sui::dynamic_object_field::Wrapper<u64>, sui::object::ID> {
+Contents: tto::M1::A {
     id: sui::object::UID {
         id: sui::object::ID {
-            bytes: fake(2,2),
+            bytes: fake(2,0),
         },
     },
-    name: sui::dynamic_object_field::Wrapper<u64> {
-        name: 0u64,
-    },
-    value: sui::object::ID {
-        bytes: fake(2,1),
-    },
+    value: 0u64,
 }
 
 task 6, lines 39-41:
-//# run tto::M1::receive --args object(2,2) receiving(2,1) --sender A
-Error: Error checking transaction input objects: Object object(2,2) is owned by object object(2,0). Objects owned by other objects cannot be used as input arguments
+//# run tto::M1::receive --args object(2,0) receiving(2,1) --sender A
+Error: Error checking transaction input objects: Object object(2,1) is owned by object object(2,2). Objects owned by other objects cannot be used as input arguments
 
 task 7, line 42:
-//# run tto::M1::receive --args object(2,2) receiving(2,0) --sender A
-Error: Error checking transaction input objects: Object object(2,2) is owned by object object(2,0). Objects owned by other objects cannot be used as input arguments
+//# run tto::M1::receive --args object(2,0) receiving(2,0) --sender A
+Error: Mismatched Object argument kind for object object(2,0). Object(ImmOrOwnedObject((object(2,0), SequenceNumber(2), o#CrAzwSQoqNdtrzxdufBcTSLU99g7CzmXuAq152LHdKr6))) is not compatible with Receiving((object(2,0), SequenceNumber(2), o#CrAzwSQoqNdtrzxdufBcTSLU99g7CzmXuAq152LHdKr6))

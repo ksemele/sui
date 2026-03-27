@@ -20,5 +20,6 @@ mutated: object(0,0)
 gas summary: computation_cost: 1000000, storage_cost: 4681600,  storage_rebate: 0, non_refundable_storage_fee: 0
 
 task 3, line 55:
-//# run a::m::claim_and_receive_nested --sender A --args object(2,2) receiving(2,1) receiving(2,0)
-Error: Error checking transaction input objects: Transaction was not signed by the correct sender: Object object(2,2) is owned by account address 0x383c6e17c6aeb6a31ee293d2e61208004740460f7baf044eddeddcd29cadb7e4, but given owner/signer address is @A
+//# run a::m::claim_and_receive_nested --sender A --args object(2,0) receiving(2,2) receiving(2,1)
+Error: Transaction Effects Status: Move Runtime Abort. Location: sui::transfer::receive_impl (function index 15) at offset 0, Abort Code: 3
+Execution Error: ExecutionError: ExecutionError { inner: ExecutionErrorInner { kind: MoveAbort(MoveLocation { module: ModuleId { address: sui, name: Identifier("transfer") }, function: 15, instruction: 0, function_name: Some("receive_impl") }, 3), source: Some(VMError { major_status: ABORTED, sub_status: Some(3), message: None, exec_state: None, location: Module(ModuleId { address: sui, name: Identifier("transfer") }), indices: [], offsets: [(FunctionDefinitionIndex(15), 0)] }), command: Some(0) } }

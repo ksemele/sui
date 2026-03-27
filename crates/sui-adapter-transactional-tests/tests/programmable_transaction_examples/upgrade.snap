@@ -47,12 +47,16 @@ task 8, lines 49-51:
 //# programmable --sender A
 //> 0: q_2::m::x();
 //> p::m::foo(Result(0))
-Error: Error checking transaction input objects: A move package is expected, instead a move object is passed: object(5,0)
+mutated: object(0,0)
+gas summary: computation_cost: 1000000, storage_cost: 988000,  storage_rebate: 978120, non_refundable_storage_fee: 9880
 
 task 9, lines 53-58:
 //# publish --dependencies p q_2 r
-Error: Error checking transaction input objects: A move package is expected, instead a move object is passed: object(5,0)
+created: object(9,0)
+mutated: object(0,1)
+gas summary: computation_cost: 1000000, storage_cost: 5768400,  storage_rebate: 978120, non_refundable_storage_fee: 9880
 
 task 10, line 60:
 //# run s::all::foo_x
-Error: Error checking transaction input objects: Dependent package not found on-chain: 0x0000000000000000000000000000000000000000000000000000000000000000
+mutated: object(0,1)
+gas summary: computation_cost: 1000000, storage_cost: 988000,  storage_rebate: 978120, non_refundable_storage_fee: 9880

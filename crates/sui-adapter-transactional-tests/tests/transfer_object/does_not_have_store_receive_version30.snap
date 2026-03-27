@@ -58,18 +58,6 @@ mutated: object(0,0)
 gas summary: computation_cost: 1000000, storage_cost: 3465600,  storage_rebate: 978120, non_refundable_storage_fee: 9880
 
 task 7, line 91:
-//# view-object 6,0
-Owner: Account Address ( A )
-Version: 4
-Contents: test::m::Parent {
-    id: sui::object::UID {
-        id: sui::object::ID {
-            bytes: fake(6,0),
-        },
-    },
-}
-
-task 8, line 93:
 //# view-object 6,1
 Owner: Account Address ( fake(6,0) )
 Version: 4
@@ -77,6 +65,18 @@ Contents: test::m::Cup<u64> {
     id: sui::object::UID {
         id: sui::object::ID {
             bytes: fake(6,1),
+        },
+    },
+}
+
+task 8, line 93:
+//# view-object 6,0
+Owner: Account Address ( A )
+Version: 4
+Contents: test::m::Parent {
+    id: sui::object::UID {
+        id: sui::object::ID {
+            bytes: fake(6,0),
         },
     },
 }
