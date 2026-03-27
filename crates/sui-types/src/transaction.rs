@@ -1027,6 +1027,7 @@ impl ProgrammableTransaction {
 }
 
 pub fn parse_gasless_allowed_token_types(config: &ProtocolConfig) -> Vec<TypeTag> {
+    #[allow(unused_mut)] // mut needed when `testing` feature is enabled
     let mut types: Vec<TypeTag> = config
         .gasless_allowed_token_types()
         .iter()
