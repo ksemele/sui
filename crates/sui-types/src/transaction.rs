@@ -63,7 +63,7 @@ use std::fmt::Write;
 use std::fmt::{Debug, Display, Formatter};
 use std::iter::once;
 use std::sync::Arc;
-#[cfg(debug_assertions)]
+#[cfg(feature = "testing")]
 use std::sync::RwLock;
 use std::time::Duration;
 use std::{
@@ -972,10 +972,10 @@ pub struct ProgrammableTransaction {
     pub commands: Vec<Command>,
 }
 
-#[cfg(debug_assertions)]
+#[cfg(feature = "testing")]
 static GASLESS_TOKENS_FOR_TESTING: RwLock<Vec<String>> = RwLock::new(Vec::new());
 
-#[cfg(debug_assertions)]
+#[cfg(feature = "testing")]
 pub fn add_gasless_token_for_testing(type_string: String) {
     GASLESS_TOKENS_FOR_TESTING
         .write()
@@ -983,7 +983,7 @@ pub fn add_gasless_token_for_testing(type_string: String) {
         .push(type_string);
 }
 
-#[cfg(debug_assertions)]
+#[cfg(feature = "testing")]
 pub fn clear_gasless_tokens_for_testing() {
     GASLESS_TOKENS_FOR_TESTING.write().unwrap().clear();
 }
@@ -1044,7 +1044,7 @@ pub fn parse_gasless_allowed_token_types(config: &ProtocolConfig) -> Vec<TypeTag
             }
         })
         .collect();
-    #[cfg(debug_assertions)]
+    #[cfg(feature = "testing")]
     for s in GASLESS_TOKENS_FOR_TESTING.read().unwrap().iter() {
         match s.parse() {
             Ok(tag) => types.push(tag),
