@@ -374,14 +374,14 @@ fn annotated_view_struct_navigate() {
     let view = compressed.as_view();
     assert_eq!(view.inflate().unwrap(), layout);
 
-    let (type_, fv) = match &view {
-        AC::MoveLayoutView::Struct { type_, fields } => (type_, fields),
+    let sv = match &view {
+        AC::MoveLayoutView::Struct(sv) => sv,
         _ => panic!("expected struct"),
     };
-    assert_eq!(type_.name.as_str(), "Foo");
-    assert_eq!(fv.field_count(), 2);
+    assert_eq!(sv.type_().name.as_str(), "Foo");
+    assert_eq!(sv.field_count(), 2);
 
-    let (name, field_view) = fv.field(0).unwrap();
+    let (name, field_view) = sv.field(0).unwrap();
     assert_eq!(name.as_str(), "x");
     assert_eq!(field_view.inflate().unwrap(), A::MoveTypeLayout::U64);
 }

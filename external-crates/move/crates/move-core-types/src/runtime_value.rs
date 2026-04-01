@@ -21,6 +21,8 @@ use std::{
     io::Cursor,
 };
 
+pub use crate::compressed::runtime as compressed_layouts;
+
 /// In the `WithTypes` configuration, a Move struct gets serialized into a Serde struct with this name
 pub const MOVE_STRUCT_NAME: &str = "struct";
 
@@ -327,8 +329,27 @@ impl MoveStructLayout {
         &self.0
     }
 
+    pub fn field_count(&self) -> usize {
+        self.0.len()
+    }
+
     pub fn into_fields(self) -> Vec<MoveTypeLayout> {
         *self.0
+    }
+}
+
+impl MoveTypeLayout {
+    /// Returns a reference to self. Establishes the `as_view()` call pattern
+    /// that will later return a compressed `MoveLayoutView` when the type
+    /// is swapped to compressed layouts.
+    pub fn as_view(&self) -> &Self {
+        self
+    }
+}
+
+impl MoveEnumLayout {
+    pub fn variant_count(&self) -> usize {
+        self.0.len()
     }
 }
 
