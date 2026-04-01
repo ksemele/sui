@@ -4,15 +4,13 @@
 use std::sync::Arc;
 
 use bytes::Bytes;
-use object_store::Error as ObjectStoreError;
+use object_store::Error;
 use object_store::ObjectStore;
 use object_store::ObjectStoreExt;
 use object_store::RetryConfig;
 use object_store::path::Path as ObjectPath;
 use serde::de::DeserializeOwned;
 use sui_types::digests::ChainIdentifier;
-use tracing::debug;
-use tracing::error;
 
 use crate::ingestion::decode;
 use crate::ingestion::ingestion_client::CheckpointData;
@@ -80,20 +78,21 @@ impl IngestionClientTrait for StoreIngestionClient {
     /// - server errors (5xx),
     /// - issues getting a full response.
     async fn checkpoint(&self, checkpoint: u64) -> CheckpointResult {
-        match self.checkpoint_bytes(checkpoint).await {
-            Ok(bytes) => Ok(CheckpointData::Raw(bytes)),
-            Err(ObjectStoreError::NotFound { .. }) => {
-                debug!(checkpoint, "Checkpoint not found");
-                Err(CheckpointError::NotFound)
-            }
-            Err(error) => {
-                error!(checkpoint, "Failed to fetch checkpoint: {error}");
-                Err(CheckpointError::Transient {
-                    reason: "object_store",
-                    error: error.into(),
-                })
-            }
-        }
+        let bytes = self
+            .checkpoint_bytes(checkpoint)
+            .await
+            .map_err(|e| match e {
+                Error::NotFound { .. } => CheckpointError::NotFound,
+                e => CheckpointError::Fetch(e.into()),
+            })?;
+
+        let num_bytes = bytes.len() as u64;
+        let checkpoint = decode::checkpoint(&bytes).map_err(CheckpointError::DecodeError)?;
+
+        Ok(CheckpointData {
+            checkpoint,
+            num_bytes,
+        })
     }
 }
 

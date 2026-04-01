@@ -457,6 +457,7 @@ mod tests {
     use tokio::time::timeout;
 
     use crate::ingestion::IngestionConfig;
+    use crate::ingestion::decode;
     use crate::ingestion::ingestion_client::CheckpointData;
     use crate::ingestion::ingestion_client::CheckpointResult;
     use crate::ingestion::ingestion_client::IngestionClientTrait;
@@ -479,7 +480,12 @@ mod tests {
             async fn checkpoint(&self, checkpoint: u64) -> CheckpointResult {
                 // Return mock checkpoint data for any checkpoint number
                 let bytes = test_checkpoint_data(checkpoint);
-                Ok(CheckpointData::Raw(bytes.into()))
+                let num_bytes = bytes.len() as u64;
+                let checkpoint = decode::checkpoint(&bytes).unwrap();
+                Ok(CheckpointData {
+                    checkpoint,
+                    num_bytes,
+                })
             }
         }
 
