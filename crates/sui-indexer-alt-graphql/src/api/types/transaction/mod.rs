@@ -8,6 +8,8 @@ use anyhow::Context as _;
 use async_graphql::Context;
 use async_graphql::Object;
 use async_graphql::connection::Connection;
+use async_graphql::connection::CursorType;
+use async_graphql::connection::Edge;
 use async_graphql::dataloader::DataLoader;
 use diesel::QueryableByName;
 use diesel::sql_types::BigInt;
@@ -48,6 +50,7 @@ use crate::error::RpcError;
 use crate::extensions::query_limits;
 use crate::pagination::Page;
 use crate::scope::Scope;
+use crate::task::streaming::ProcessedTransaction;
 use crate::task::watermark::Watermarks;
 
 pub(crate) mod filter;
@@ -222,6 +225,38 @@ impl Transaction {
             digest,
             contents: TransactionContents::empty(scope),
         }
+    }
+
+    /// Return all pre-loaded transactions as a Connection, applying in-memory filtering.
+    ///
+    /// Used when transaction data is already available (e.g. from streaming) and doesn't
+    /// require database queries. Returns all matching transactions without pagination limits.
+    /// Output cursors encode `tx_sequence_number` for consistency with the query API.
+    pub(crate) fn connection_from_preloaded_transactions(
+        scope: Scope,
+        transactions: &[ProcessedTransaction],
+        filter: TransactionFilter,
+    ) -> Result<Connection<String, Transaction>, RpcError> {
+        let mut conn = Connection::new(false, false);
+
+        for tx in transactions
+            .iter()
+            .filter(|tx| filter.matches(&tx.contents))
+        {
+            let cursor = JsonCursor::new(tx.tx_sequence_number).encode_cursor();
+            conn.edges.push(Edge::new(
+                cursor,
+                Transaction {
+                    digest: tx.digest,
+                    contents: TransactionContents {
+                        scope: scope.clone(),
+                        contents: Some(Arc::new(tx.contents.clone())),
+                    },
+                },
+            ));
+        }
+
+        Ok(conn)
     }
 
     /// Load the transaction from the store, and return it fully inflated (with contents already

@@ -220,6 +220,62 @@ async fn test_checkpoint_subscription_sequential() {
 }
 
 #[tokio::test]
+async fn test_checkpoint_subscription_transactions() {
+    let validator_cluster = TestClusterBuilder::new().build().await;
+    let cluster = SubscriptionTestCluster::new(&validator_cluster).await;
+
+    let mut stream = cluster
+        .subscribe(
+            r#"subscription {
+                checkpoints {
+                    sequenceNumber
+                    transactions {
+                        nodes {
+                            digest
+                            effects {
+                                status
+                            }
+                            sender {
+                                address
+                            }
+                        }
+                    }
+                }
+            }"#,
+        )
+        .await;
+
+    // Collect a few items and find one with transactions
+    let items = stream.collect_items(5).await;
+    let item_with_txns = items
+        .iter()
+        .find(|item| {
+            let nodes = &item["data"]["checkpoints"]["transactions"]["nodes"];
+            nodes.is_array() && !nodes.as_array().unwrap().is_empty()
+        })
+        .expect("Expected at least one checkpoint with transactions");
+
+    let nodes = item_with_txns["data"]["checkpoints"]["transactions"]["nodes"]
+        .as_array()
+        .unwrap();
+    let first_tx = &nodes[0];
+
+    // Verify transaction fields are present
+    assert!(first_tx["digest"].is_string(), "digest should be a string");
+    assert!(
+        first_tx["effects"]["status"].is_string(),
+        "effects.status should be a string"
+    );
+
+    // Sender may be null for system transactions
+    let sender = &first_tx["sender"];
+    assert!(
+        sender.is_object() || sender.is_null(),
+        "sender should be an object or null"
+    );
+}
+
+#[tokio::test]
 async fn test_checkpoint_subscription_fields() {
     let validator_cluster = TestClusterBuilder::new().build().await;
     let cluster = SubscriptionTestCluster::new(&validator_cluster).await;
