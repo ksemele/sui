@@ -11,6 +11,7 @@ use std::sync::Arc;
 use consensus_config::{AuthorityIndex, Stake};
 use consensus_types::block::{BlockDigest, BlockRef};
 use consensus_types::block::{Round, TransactionIndex};
+use mysten_common::CheckedIteratorExt;
 use mysten_metrics::monitored_mpsc::unbounded_channel;
 use parking_lot::RwLock;
 use rand::prelude::SliceRandom;
@@ -237,7 +238,7 @@ pub fn assert_commit_sequences_match(
 
         for (commit_index, (c1, c2)) in commit_sequence
             .iter()
-            .zip(shortest_sequence.iter())
+            .checked_zip(shortest_sequence.iter())
             .enumerate()
         {
             assert_eq!(

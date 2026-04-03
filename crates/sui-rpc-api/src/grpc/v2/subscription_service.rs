@@ -4,6 +4,7 @@
 use std::pin::Pin;
 
 use crate::RpcService;
+use mysten_common::CheckedIteratorExt;
 use sui_rpc::field::FieldMaskTree;
 use sui_rpc::merge::Merge;
 use sui_rpc::proto::sui::rpc::v2::Checkpoint;
@@ -49,7 +50,7 @@ impl SubscriptionService for RpcService {
                 );
 
                 if read_mask.contains("transactions.balance_changes") {
-                    for (txn, effects) in checkpoint_message.transactions_mut().iter_mut().zip(
+                    for (txn, effects) in checkpoint_message.transactions_mut().iter_mut().checked_zip(
                         checkpoint
                             .transactions
                             .iter()
